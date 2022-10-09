@@ -271,8 +271,8 @@ def main():
             grd = False
 
         if grd == True:
-            with open(achv_txt, 'a') as achv_txt:
-                achv_txt.write(cfg + '\n')
+            with open(achv_txt, 'a') as archivo:
+                archivo.write(cfg + '\n')
             os.system(cfg)
         else:
             pass #No se hace nada
