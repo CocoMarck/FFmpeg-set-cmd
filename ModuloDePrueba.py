@@ -286,19 +286,21 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True):
         nmr = flt
         txt = ''
         cfg = ''
-        if flt >= 1:        
+        if flt > 0:        
             opc = Continue(f'La cantidad de audios a grabar son {flt}\n'
                             "¿Continuar?")
             if opc == 's': pass
             else: nmr, flt = 0, 0
 
             while flt > 0:
-                adi[flt - 1] = FFmpeg(opc='Audio')
+                adi[flt - 1] = FFmpeg('Audio', f'Audio {flt}')
                 flt = flt - 1        
         else:
             CleanScreen()
-            input(f'"{flt}" Significa que no quieres grabar audio.')
-            main()
+            input(f'"{flt}" Significa que no quieres grabar audio.\n'
+                  'Preciona enter para continuar...')
+            cfg = ''
+            CleanScreen()
 
         while nmr > 0:
             txt = adi[nmr - 1] + ' ' + txt
@@ -306,6 +308,6 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True):
             #input(f"{adi[nmr - 1]}"), <- Para mostrar las fuentes de audio
             nmr = nmr - 1
 
-    else: cfg = 'Opcion inexistente'
+    else: cfg = '#Error'
 
     return cfg

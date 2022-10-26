@@ -10,6 +10,7 @@ def App_FFmpeg():
         Util.CleanScreen()
         opc = input(Util.Title(txt='Opciones', see=False) +
                 '1. Comprimir videos\n'
+                '2. Grabar Audio\n'
                 '0. Salir\n\n'
                 'Elige una opción: ')
         cfg = '#SinConfigurar'
@@ -18,6 +19,9 @@ def App_FFmpeg():
         if opc == '1':
             cfg = Compress_Video()
             cfg_save = True
+        elif opc == '2':
+            cfg = Record_Audio()
+            cfg_save = True
         elif opc == '0':
             loop = False
             print('Saliendo...')
@@ -25,18 +29,20 @@ def App_FFmpeg():
             pass
 
         if cfg_save == True:
-            opc = Util.Continue(
-                 Util.Title('Esta es tu configuración', see=False) +
-                 f'{cfg}\n\n¿Continuar?')
-
-            if opc == 's':
-                os.system(cfg)
-                with open(cfg_file, 'a') as file_cfg:
-                    file_cfg.write(cfg + '\n')
-            elif opc == 'n': pass
+            if cfg == '': pass
             else:
-                input(f'La opcion "{opc}" no existe\n'
-                      'Precione enter para continuar...')
+                opc = Util.Continue(
+                     Util.Title('Esta es tu configuración', see=False) +
+                     f'{cfg}\n\n¿Continuar?')
+
+                if opc == 's':
+                    os.system(cfg)
+                    with open(cfg_file, 'a') as file_cfg:
+                        file_cfg.write(cfg + '\n')
+                elif opc == 'n': pass
+                else:
+                    input(f'La opcion "{opc}" no existe\n'
+                          'Precione enter para continuar...')
         else: pass    
 
 
@@ -71,6 +77,21 @@ def Compress_Video():
     cfg = (f"ffmpeg -i {pth}'{nme}' {crf} {rlt} {fps} "
            f"{pth}'{nme}_Comprimido.mkv'")
     
+    return cfg
+
+def Record_Audio():
+    adi = int(input('¿Cuantos audios quieres grabar?: '))
+    Util.CleanScreen()
+    if adi >= 2:
+        cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi)} "
+            f"-filter_complex amix=inputs={adi} "
+            f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
+    elif adi == 1:
+        cfg = (f"ffmpeg {Util.FFmpeg('Audio')} "
+            f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
+    else:
+        cfg = Util.FFmpeg('AudioFilter', flt=adi)
+
     return cfg
 
 if __name__ == '__main__':
