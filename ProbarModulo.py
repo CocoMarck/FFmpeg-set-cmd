@@ -10,7 +10,7 @@ def App_FFmpeg():
         Util.CleanScreen()
         opc = input(Util.Title(txt='Opciones', see=False) +
                 '1. Comprimir videos\n'
-                '2. Grabar Audio\n'
+                '2. Grabar\n'
                 '0. Salir\n\n'
                 'Elige una opción: ')
         cfg = '#SinConfigurar'
@@ -20,7 +20,7 @@ def App_FFmpeg():
             cfg = Compress_Video()
             cfg_save = True
         elif opc == '2':
-            cfg = Record_Audio()
+            cfg = Record()
             cfg_save = True
         elif opc == '0':
             loop = False
@@ -79,18 +79,91 @@ def Compress_Video():
     
     return cfg
 
-def Record_Audio():
-    adi = int(input('¿Cuantos audios quieres grabar?: '))
+def Record(opc = ''):
+    if opc == '':
+        nmr = input(Util.Title('Opciones para grabar', see=False) +
+                    '1. Grabar Audio\n'
+                    '2. Grabar Pantalla\n\n'
+                    f'Que opción eligieste: ')
+    else: pass
+
+    if nmr == '1': opc = 'Audio'
+    elif nmr == '2': opc = 'Desktop'
+    else: pass
+
     Util.CleanScreen()
-    if adi >= 2:
-        cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi)} "
-            f"-filter_complex amix=inputs={adi} "
-            f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
-    elif adi == 1:
-        cfg = (f"ffmpeg {Util.FFmpeg('Audio')} "
-            f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
-    else:
-        cfg = Util.FFmpeg('AudioFilter', flt=adi)
+    cfg = ''
+
+    if opc == 'Audio':
+        adi = int(input('¿Cuantos audios quieres grabar?: '))
+        Util.CleanScreen()
+        if adi >= 2:
+            cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi)} "
+                f"-filter_complex amix=inputs={adi} "
+                f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
+        elif adi == 1:
+            cfg = (f"ffmpeg {Util.FFmpeg('Audio')} "
+                f"{Util.Path()}'{Util.Name('Audio')}.ogg'")
+        else:
+            cfg = Util.FFmpeg('AudioFilter', flt=adi)
+
+    elif opc == 'Desktop':
+        opc = Util.Continue('¿Configuración Avanzada?')
+        Util.CleanScreen()
+        if opc == 's':        
+            opc = Util.Continue(Util.Title('Modo Avanzado', see=False) +
+                                '¿Grabar con audio?')
+            Util.CleanScreen()
+            if opc == 's':
+                adi = int(input(Util.Title('Modo Avanzado', see=False) +
+                              '¿Cuantos audios quieres grabar?: '))
+                Util.CleanScreen()
+                Util.Title('Modo Avanzado')
+
+                Quality = Util.FFmpeg('Quality')
+                Preset = Util.FFmpeg('Preset')
+                Resolution = Util.FFmpeg('Resolution', 'Salida')
+                Frame = Util.FFmpeg('Frame')
+                if adi >= 2:
+                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                        f"{Util.FFmpeg('AudioFilter', flt = adi)} "
+                        f"{Quality} {Preset} {Resolution} {Frame} "
+                        f"-filter_complex amix=inputs={adi} "
+                        f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+                elif adi == 1:
+                    cfg = (f"ffmpeg -f x11grab -i :0 {Util.FFmpeg('Audio')} "
+                        f"{Quality} {Preset} {Resolution} {Frame} "
+                        f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+                else: pass
+            else:
+                cfg = (f"ffmpeg -f x11grab -i :0 "
+                    f"{Util.FFmpeg('Quality')} {Util.FFmpeg('Preset')} "
+                    f"{Util.FFmpeg('Resolution', 'Salida')} "
+                    f"{Util.FFmpeg('Frame')} "
+                    f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+        elif opc == 'n':
+            opc = Util.Continue(Util.Title('Modo Basico', see=False) +
+                      '¿Grabar con audio?')
+            Util.CleanScreen()
+            if opc == 's':
+                adi = int(input(Util.Title('Modo Basico', see=False) +
+                              '¿Cuantos audios quieres grabar?: '))
+                Util.CleanScreen()
+                Util.Title('Modo Basico')
+                if adi >= 2:
+                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                        f"{Util.FFmpeg('AudioFilter', flt=adi)} "
+                        f"-r 24 -s 1280x720 -filter_complex amix=inputs={adi} "
+                        f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+                elif adi == 1:
+                    cfg = (f"ffmpeg -f x11grab -i :0 {Util.FFmpeg('Audio')} "
+                        f"-r 24 -s 1280x720 "
+                        f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+                else: pass
+            else:
+                cfg = (f"ffmpeg -f x11grab -i :0 -r 24 -s 1280x720 "
+                    f"{Util.Path()}'{Util.Name('Video')}.mkv'")
+        else: pass
 
     return cfg
 
