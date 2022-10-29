@@ -52,23 +52,24 @@ def Compress_Video():
 
     pth = Util.Path()
     nme = Util.Name()
-
-    Util.Title(txt='CRF Calidad')
-    opc = input('¿Comprimir Video (crf)? s/n: ')
+    
+    opc = input(Util.Title('CRF Calidad', see=False) +
+                '¿Comprimir Video (crf)? s/n: ')
     Util.CleanScreen()
     if opc == 's':
         crf = Util.FFmpeg('Quality', 'Calidad')
     else: crf = ''
 
-    Util.Title(txt='Resolución de video')
-    opc = input('¿Rescalar video (resolución)? s/n: ')
+    
+    opc = input(Util.Title(txt='Resolución de video', see=False) +
+                '¿Rescalar video (resolución)? s/n: ')
     Util.CleanScreen()
     if opc == 's':
         rlt = Util.FFmpeg('Resolution', 'Resolución de video')
     else: rlt = ''
 
-    Util.Title(txt='Fotogramas por segundo')
-    opc = input('¿Cambiar fps? s/n: ')
+    opc = input(Util.Title('Fotogramas por segundo', see=False) +
+                '¿Cambiar fps? s/n: ')
     Util.CleanScreen()
     if opc == 's':
         fps = Util.FFmpeg('Frame', 'Fotorgramas (FPS)')
@@ -110,7 +111,19 @@ def Record(opc = ''):
     elif opc == 'Desktop':
         opc = Util.Continue('¿Configuración Avanzada?')
         Util.CleanScreen()
-        if opc == 's':        
+        if opc == 's':
+            Util.Title('Modo Avanzado')
+            Quality = Util.FFmpeg('Quality')
+
+            Util.Title('Modo Avanzado')
+            Preset = Util.FFmpeg('Preset')
+
+            Util.Title('Modo Avanzado')
+            Resolution = Util.FFmpeg('Resolution', 'Salida')
+
+            Util.Title('Modo Avanzado')
+            Frame = Util.FFmpeg('Frame')
+
             opc = Util.Continue(Util.Title('Modo Avanzado', see=False) +
                                 '¿Grabar con audio?')
             Util.CleanScreen()
@@ -118,12 +131,7 @@ def Record(opc = ''):
                 adi = int(input(Util.Title('Modo Avanzado', see=False) +
                               '¿Cuantos audios quieres grabar?: '))
                 Util.CleanScreen()
-                Util.Title('Modo Avanzado')
 
-                Quality = Util.FFmpeg('Quality')
-                Preset = Util.FFmpeg('Preset')
-                Resolution = Util.FFmpeg('Resolution', 'Salida')
-                Frame = Util.FFmpeg('Frame')
                 if adi >= 2:
                     cfg = (f"ffmpeg -f x11grab -i :0 "
                         f"{Util.FFmpeg('AudioFilter', flt = adi)} "
@@ -137,9 +145,7 @@ def Record(opc = ''):
                 else: pass
             else:
                 cfg = (f"ffmpeg -f x11grab -i :0 "
-                    f"{Util.FFmpeg('Quality')} {Util.FFmpeg('Preset')} "
-                    f"{Util.FFmpeg('Resolution', 'Salida')} "
-                    f"{Util.FFmpeg('Frame')} "
+                    f"{Quality} {Preset} {Resolution} {Frame} "
                     f"{Util.Path()}'{Util.Name('Video')}.mkv'")
         elif opc == 'n':
             opc = Util.Continue(Util.Title('Modo Basico', see=False) +
