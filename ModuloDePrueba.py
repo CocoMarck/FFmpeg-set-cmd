@@ -14,14 +14,13 @@ def Title(txt = '', smb = '#', see = True, spc = 4):
         pass
     return txt
 
-def CleanScreen(opc = 'linux'):
+def CleanScreen(sys = 'linux'):
     '''Limpiar pantalla'''
-    if opc == 'linux':
+    if sys == 'linux':
         os.system('clear')
-    elif opc == 'win':
+    elif sys == 'win':
         os.system('cls')
-    else:
-        pass
+    else: pass
 
 def Separator(spc = 128, smb = '#', see = True):
     '''Separar texto'''
@@ -66,111 +65,7 @@ def Path():
     CleanScreen()
     return pth
 
-def FFmpeg_Resolution(txt = ''):
-    print(Title(txt=f'Resolucion de {txt}', see=False) +
-        Title(txt='(ancho X alto)', see=False) +
-        "#EJEMPLOS\n"
-        "#1920x1080\n"
-        "#1280x720\n"
-        "#854x480\n")
-    rsl_h = int(input('Ancho: '))
-    rsl_v = int(input('Alto: '))
-    CleanScreen()
-    rsl = f'-s {rsl_h}x{rsl_v}'
-    return rsl
-
-def FFmpeg_Quality(txt = 'Calidad'):
-    print(Title(txt = txt, see = False) +
-        "Rango de 0-50. Donde 0 es la mejor calidad y 50 la peor.\n")
-    crf = int(input('CRF: '))
-    if crf <= 50:
-        crf = f'-crf {crf}'
-    else:
-        crf = '-crf 23'
-        print(f"Fuera de rango (de 0 a 50)\n"
-            f"El CRF sera {crf}.\n")
-        Continue()
-    CleanScreen()
-    return crf
-
-def FFmpeg_Frame():
-    print(Title(txt='Fotogramas deseados', see=False) +
-        Title(txt='(fotogramas X segundo)', see=False) +
-        "#EJEMPLOS\n"
-        "15\n"
-        "30\n"
-        "60\n")
-    fps = int(input('Fotogramas: '))
-    fps = f'-r {fps}'
-    CleanScreen()
-    return fps
-
-def FFmpeg_Preset():
-    pst = int(input(Title(txt='Uso de CPU', see = False) +
-        "#PRESETS:\n"
-        "#Rango del 1 al 9. Donde 1 es la opcion que usa "
-        "menos cpu y 9 la que usa mas cpu.\n"
-        "1.ultrafast\n"
-        "2.superfast\n"
-        "3.veryfast\n"
-        "4.faster\n"
-        "5.fast\n"
-        "6.medium\n"
-        "7.slow\n"
-        "8.slower\n"
-        "9.veryslow\n"
-        'Preset: '))
-
-    if pst == 1: pst = '-preset ultrafast'
-    elif pst == 2: pst = '-preset superfast'
-    elif pst == 3: pst = '-preset veryfast'
-    elif pst == 4: pst = '-preset faster'
-    elif pst == 5: pst = '-preset fast'
-    elif pst == 6: pst = '-preset medium'
-    elif pst == 7: pst = '-preset slow'
-    elif pst == 8: pst = '-preset slower'
-    elif pst == 9: pst = '-preset veryslow'
-    else:
-        pst = '-preset medium'
-        print(f"Esa opcion no existe.\nEl preset sera {pst}.\n")
-        Continue()
-    CleanScreen()
-    return pst
-
-def FFmpeg_Audio(txt = 'Dispositivos de audio'):
-    print(Title(txt = txt, see = False) +
-        "#Seleccione un numero\n"
-        "#EJEMPLO\n"
-        "#    Audio: 1\n")
-    os.system('pactl list short sources')
-    adi = input('\nAudio: ')
-    adi = f"-f pulse -i {adi}"
-    CleanScreen()
-    return adi
-
-def FFmpeg_AudioFilter(flt = 2):
-    adi = [''] * flt
-    nmr = flt
-    txt = ''
-    if flt >= 1:        
-        Continue(txt = f'¿La cantidad de audios a grabar son {flt}?')
-        while flt > 0:
-            adi[flt - 1] = FFmpeg_Audio(txt = f'Dispositivo numero {flt}')
-            flt = flt - 1        
-    else:
-        CleanScreen()
-        input(f'"{flt}" Significa que no quieres grabar audio.')
-        main()
-
-    while nmr > 0:
-        txt = adi[nmr - 1] + ' ' + txt
-        #input(f"{adi[nmr - 1]}"), <- Para mostrar las fuentes de audio
-        nmr = nmr - 1
-    return txt
-
-
-
-def FFmpeg(opc = 'Help', txt='', flt=2, see = True):
+def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
     if opc == 'Help':
         if see == True:
             if txt == '': Title(txt='Ayuda')
@@ -276,9 +171,16 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True):
         print("#Seleccione un numero\n"
             "#EJEMPLO\n"
             "#    Audio: 1\n")
-        os.system('pactl list short sources')
-        adi = input('\nAudio: ')
-        cfg = f"-f pulse -i {adi}"
+        if sys == 'linux':
+            os.system('pactl list short sources')
+            adi = input('\nAudio: ')
+            cfg = f"-f pulse -i {adi}"
+        elif sys == 'win':
+            os.system('ffmpeg -list_devices true -f dshow -i dummy')
+            adi = input('\nAudio: ')
+            cfg = f"-f dshow -i audio='{adi}'"
+        else: cfg = ''
+
         CleanScreen()
 
     elif opc == 'AudioFilter':
@@ -292,9 +194,18 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True):
             if opc == 's': pass
             else: nmr, flt = 0, 0
 
-            while flt > 0:
-                adi[flt - 1] = FFmpeg('Audio', f'Audio {flt}')
-                flt = flt - 1        
+            if sys == 'linux':
+                while flt > 0:
+                    adi[flt - 1] = FFmpeg('Audio', f'Audio {flt}',
+                                          sys='linux')
+                    flt = flt - 1
+            elif sys == 'win':
+                while flt > 0:
+                    adi[flt - 1] = FFmpeg('Audio', f'Audio {flt}',
+                                          sys='win')
+                    flt = flt - 1
+            else: cfg = ''
+
         else:
             CleanScreen()
             input(f'"{flt}" Significa que no quieres grabar audio.\n'
