@@ -22,7 +22,7 @@ def CleanScreen(sys = 'linux'):
         os.system('cls')
     else: pass
 
-def Separator(spc = 128, smb = '#', see = True):
+def Separator(spc = 128, smb = '#', see = True, sys='linux'):
     '''Separar texto'''
     txt = smb*spc
     if see == True:
@@ -33,36 +33,44 @@ def Separator(spc = 128, smb = '#', see = True):
         pass
     return txt
 
-def Continue(txt='¿Continuar?', lang = 'español'):
+def Continue(txt='¿Continuar?', lang = 'español', sys='linux'):
     idm = ['']*2
     if lang == 'español': idm[0], idm[1] = 's', 'n'
     elif lang == 'english': idm[0], idm[1] = 'y', 'n'
     else: idm[0], idm[1] = '', ''
 
     opc = input(f'{txt} {idm[0]}/{idm[1]}: ')
-    if opc == 's': CleanScreen()
-    elif opc == 'n': CleanScreen()
+    if opc == 's': CleanScreen(sys)
+    elif opc == 'n': CleanScreen(sys)
     else: pass
     return opc
 
-def Name(txt = 'Archivo'):
+def Name(txt = 'Archivo', sys = 'linux'):
     nme = input(Title(txt=f'Nombre de {txt}', see=False) +
               'Nombre: ')
-    CleanScreen()
+    CleanScreen(sys)
     return nme
 
-def Path():
+def Path(sys='linux'):
 #    pth = ''
-    CleanScreen()
+    CleanScreen(sys)
     opc = input(Title(txt='Ruta', see=False) +
         "¿Elegir ruta? s/n: ")
-    if opc == "s":
-        pth = input("$HOME/")
-        pth = f"$HOME/'{pth}'"
-    else:
-        pth = "$HOME/"
+    if sys == 'linux':
+        if opc == "s":
+            pth = input("$HOME/")
+            pth = f"$HOME/'{pth}'"
+        else:
+            pth = "$HOME/"
+    elif sys == 'win':
+        if opc == "s":
+            pth = input("C:\\Users\\")
+            pth = f"C:\\'{pth}'"
+        else:
+            pth = "C:\\Users\\"
+    else: pth = ''
 
-    CleanScreen()
+    CleanScreen(sys)
     return pth
 
 def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
@@ -86,7 +94,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             "#854x480\n")
         rsl_h = int(input('Ancho: '))
         rsl_v = int(input('Alto: '))
-        CleanScreen()
+        CleanScreen(sys)
 #        rsl = f'-s {rsl_h}x{rsl_v}'
         cfg = f'-s {rsl_h}x{rsl_v}'
 
@@ -103,10 +111,10 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         else:
             cfg = '-crf 23'
             opc = Continue("Fuera de rango (de 0 a 50)\n"
-                          f"El CRF sera {crf}.\n¿Continuar?")
+                          f"El CRF sera {crf}.\n¿Continuar?", sys=sys)
             if opc == 's': pass
             else: cfg = ''
-        CleanScreen()
+        CleanScreen(sys)
 
     elif opc == 'Frame':
         if see == True:
@@ -121,7 +129,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             "#60\n")
         fps = int(input('Fotogramas: '))
         cfg = f'-r {fps}'
-        CleanScreen()
+        CleanScreen(sys)
 
     elif opc == 'Preset':
         if see == True:
@@ -155,12 +163,12 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         else:
             pst = '-preset medium'
             opc = Continue(f"Esa opcion no existe.\nEl preset sera {pst}.\n"
-                            "¿Continuar?")
+                            "¿Continuar?", sys=sys)
             if opc == 's': pass
             else: cfg = ''
-            Continue()
+            Continue(sys=sys)
         cfg = pst
-        CleanScreen()
+        CleanScreen(sys)
 
     elif opc == 'Audio':
         if see == True:
@@ -181,7 +189,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             cfg = f"-f dshow -i audio='{adi}'"
         else: cfg = ''
 
-        CleanScreen()
+        CleanScreen(sys)
 
     elif opc == 'AudioFilter':
         adi = [''] * flt
@@ -190,7 +198,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         cfg = ''
         if flt > 0:        
             opc = Continue(f'La cantidad de audios a grabar son {flt}\n'
-                            "¿Continuar?")
+                            "¿Continuar?", sys=sys)
             if opc == 's': pass
             else: nmr, flt = 0, 0
 
@@ -207,11 +215,11 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             else: cfg = ''
 
         else:
-            CleanScreen()
+            CleanScreen(sys)
             input(f'"{flt}" Significa que no quieres grabar audio.\n'
                   'Preciona enter para continuar...')
             cfg = ''
-            CleanScreen()
+            CleanScreen(sys)
 
         while nmr > 0:
             txt = adi[nmr - 1] + ' ' + txt
