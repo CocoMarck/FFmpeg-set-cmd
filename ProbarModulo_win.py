@@ -51,7 +51,7 @@ def Compress_Video():
 #    Util.Title(txt='Comprimir videos')
 
     pth = Util.Path('win')
-    nme = Util.Name()
+    nme = Util.Name(sys='win')
     
     opc = input(Util.Title('CRF Calidad', see=False) +
                 '¿Comprimir Video (crf)? s/n: ')
@@ -101,10 +101,10 @@ def Record(opc = ''):
         if adi >= 2:
             cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi, sys='win')} "
                 f"-filter_complex amix=inputs={adi} "
-                f"{Util.Path(sys='win')}'{Util.Name('Audio')}.ogg'")
+                f"{Util.Path(sys='win')}'{Util.Name('Audio', sys='win')}.ogg'")
         elif adi == 1:
             cfg = (f"ffmpeg {Util.FFmpeg('Audio', sys='win')} "
-                f"{Util.Path(sys='win')}'{Util.Name('Audio')}.ogg'")
+                f"{Util.Path(sys='win')}'{Util.Name('Audio', sys='win')}.ogg'")
         else:
             cfg = Util.FFmpeg('AudioFilter', flt=adi)
 
@@ -113,16 +113,16 @@ def Record(opc = ''):
         Util.CleanScreen('win')
         if opc == 's':
             Util.Title('Modo Avanzado')
-            Quality = Util.FFmpeg('Quality')
+            Quality = Util.FFmpeg('Quality', sys='win')
 
             Util.Title('Modo Avanzado')
-            Preset = Util.FFmpeg('Preset')
+            Preset = Util.FFmpeg('Preset', sys='win')
 
             Util.Title('Modo Avanzado')
-            Resolution = Util.FFmpeg('Resolution', 'Salida')
+            Resolution = Util.FFmpeg('Resolution', 'Salida', sys='win')
 
             Util.Title('Modo Avanzado')
-            Frame = Util.FFmpeg('Frame')
+            Frame = Util.FFmpeg('Frame', sys='win')
 
             opc = Util.Continue(Util.Title('Modo Avanzado', see=False) +
                                 '¿Grabar con audio?', sys='win')
@@ -137,17 +137,17 @@ def Record(opc = ''):
                         f"{Util.FFmpeg('AudioFilter', flt = adi, sys='win')} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
                         f"-filter_complex amix=inputs={adi} "
-                        f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 elif adi == 1:
                     cfg = (f"ffmpeg -f x11grab -i :0 "
                         f"{Util.FFmpeg('Audio', sys='win')} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
-                        f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 else: pass
             else:
                 cfg = (f"ffmpeg -f x11grab -i :0 "
                     f"{Quality} {Preset} {Resolution} {Frame} "
-                    f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                    f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
         elif opc == 'n':
             opc = Util.Continue(Util.Title('Modo Basico', see=False) +
                       '¿Grabar con audio?')
@@ -161,16 +161,16 @@ def Record(opc = ''):
                     cfg = (f"ffmpeg -f x11grab -i :0 "
                         f"{Util.FFmpeg('AudioFilter', flt=adi, sys='win')} "
                         f"-r 24 -s 1280x720 -filter_complex amix=inputs={adi} "
-                        f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 elif adi == 1:
                     cfg = (f"ffmpeg -f x11grab -i :0 "
                         f"{Util.FFmpeg('Audio', sys='win')} "
                         f"-r 24 -s 1280x720 "
-                        f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 else: pass
             else:
                 cfg = (f"ffmpeg -f x11grab -i :0 -r 24 -s 1280x720 "
-                    f"{Util.Path('win')}'{Util.Name('Video')}.mkv'")
+                    f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
         else: pass
 
     return cfg

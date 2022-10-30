@@ -64,10 +64,9 @@ def Path(sys='linux'):
             pth = "$HOME/"
     elif sys == 'win':
         if opc == "s":
-            pth = input("C:\\Users\\")
-            pth = f"C:\\'{pth}'"
-        else:
-            pth = "C:\\Users\\"
+            pth = input("Escribe la ruta: ")
+            pth = f'{pth}'
+        else: pth = ''
     else: pth = ''
 
     CleanScreen(sys)
