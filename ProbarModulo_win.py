@@ -133,7 +133,7 @@ def Record(opc = ''):
                 Util.CleanScreen('win')
 
                 if adi >= 2:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                    cfg = (f"ffmpeg -f gdigrab -i desktop "
                         f"{Util.FFmpeg('AudioFilter', flt = adi, sys='win')} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
                         f"-filter_complex amix=inputs={adi} "
@@ -145,7 +145,7 @@ def Record(opc = ''):
                         f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 else: pass
             else:
-                cfg = (f"ffmpeg -f x11grab -i :0 "
+                cfg = (f"ffmpeg -f gdigrab -i desktop "
                     f"{Quality} {Preset} {Resolution} {Frame} "
                     f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
         elif opc == 'n':
@@ -158,18 +158,18 @@ def Record(opc = ''):
                 Util.CleanScreen('win')
                 Util.Title('Modo Basico')
                 if adi >= 2:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                    cfg = (f"ffmpeg -f gdigrab -i desktop "
                         f"{Util.FFmpeg('AudioFilter', flt=adi, sys='win')} "
                         f"-r 24 -s 1280x720 -filter_complex amix=inputs={adi} "
                         f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 elif adi == 1:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                    cfg = (f"ffmpeg -f gdigrab -i desktop "
                         f"{Util.FFmpeg('Audio', sys='win')} "
                         f"-r 24 -s 1280x720 "
                         f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
                 else: pass
             else:
-                cfg = (f"ffmpeg -f x11grab -i :0 -r 24 -s 1280x720 "
+                cfg = (f"ffmpeg -f gdigrab -i desktop -r 24 -s 1280x720 "
                     f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
         else: pass
 
