@@ -65,7 +65,7 @@ def Path(sys='linux'):
     elif sys == 'win':
         if opc == "s":
             pth = input("Escribe la ruta: ")
-            pth = f'{pth}'
+            pth = f'"{pth}"'
         else: pth = ''
     else: pth = ''
 
