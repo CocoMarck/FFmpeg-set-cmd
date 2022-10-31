@@ -11,6 +11,7 @@ def App_FFmpeg():
         opc = input(Util.Title(txt='Opciones', see=False) +
                 '1. Comprimir videos\n'
                 '2. Grabar\n'
+                '3. Reproducir\n'
                 '0. Salir\n\n'
                 'Elige una opción: ')
         cfg = '#SinConfigurar'
@@ -21,6 +22,9 @@ def App_FFmpeg():
             cfg_save = True
         elif opc == '2':
             cfg = Record()
+            cfg_save = True
+        elif opc == '3':
+            cfg = Reproduce()
             cfg_save = True
         elif opc == '0':
             loop = False
@@ -45,6 +49,25 @@ def App_FFmpeg():
                           'Precione enter para continuar...')
         else: pass    
 
+def Reproduce(opc = ''):
+    if opc == '':
+        nmr = input(Util.Title('Reproducir', see=False) +
+                    '1. Audio\n\n'
+                    'Opcion: ')
+    else: pass
+
+
+    if nmr == '1': opc = 'Audio'
+    else: pass
+
+
+    if opc == 'Audio':
+        adi = int(input('¿Cuantos audios quieres reproducir?: '))
+        cfg = f"ffplay {Util.FFmpeg('AudioFilter', flt=adi)}"
+    else: cfg = ''
+
+
+    return cfg
 
 def Compress_Video():
 #ffmpeg -i '/Ruta/VideoEntrada.mkv' -crf 0/50 -r 0 '/Ruta/VideoSalida.mkv'
@@ -85,7 +108,7 @@ def Record(opc = ''):
         nmr = input(Util.Title('Opciones para grabar', see=False) +
                     '1. Grabar Audio\n'
                     '2. Grabar Pantalla\n\n'
-                    f'Que opción eligieste: ')
+                    f'Opción: ')
     else: pass
 
     if nmr == '1': opc = 'Audio'
