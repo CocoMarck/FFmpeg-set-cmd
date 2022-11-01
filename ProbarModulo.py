@@ -12,6 +12,7 @@ def App_FFmpeg():
                 '1. Comprimir videos\n'
                 '2. Grabar\n'
                 '3. Reproducir\n'
+                '9. Ver comandos creados\n'
                 '0. Salir\n\n'
                 'Elige una opción: ')
         cfg = '#SinConfigurar'
@@ -26,6 +27,13 @@ def App_FFmpeg():
         elif opc == '3':
             cfg = Reproduce()
             cfg_save = True
+
+
+        elif opc == '9':
+            if pathlib.Path(cfg_file).exists():
+                with open(cfg_file, 'r') as file_cfg:
+                    reader = file_cfg.read()
+                    input(f'{reader}\n\nPreciona enter para continuar...')
         elif opc == '0':
             loop = False
             print('Saliendo...')

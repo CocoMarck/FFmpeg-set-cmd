@@ -11,6 +11,8 @@ def App_FFmpeg():
         opc = input(Util.Title(txt='Opciones', see=False) +
                 '1. Comprimir videos\n'
                 '2. Grabar\n'
+                '3. Reproducir\n'
+                '9. Ver comandos creados\n'
                 '0. Salir\n\n'
                 'Elige una opción: ')
         cfg = '#SinConfigurar'
@@ -22,6 +24,16 @@ def App_FFmpeg():
         elif opc == '2':
             cfg = Record()
             cfg_save = True
+        elif opc == '3':
+            cfg = Reproduce()
+            cfg_save = True
+
+
+        elif opc == '9':
+            if pathlib.Path(cfg_file).exists():
+                with open(cfg_file, 'r') as file_cfg:
+                    reader = file_cfg.read()
+                    input(f'{reader}\n\nPreciona enter para continuar...')
         elif opc == '0':
             loop = False
             print('Saliendo...')
@@ -172,6 +184,27 @@ def Record(opc = ''):
                 cfg = (f"ffmpeg -f gdigrab -i desktop -r 24 -s 1280x720 "
                     f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
         else: pass
+
+
+def Reproduce(opc = ''):
+    if opc == '':
+        nmr = input(Util.Title('Reproducir', see=False) +
+                    '1. Audio\n\n'
+                    'Opcion: ')
+    else: pass
+
+
+    if nmr == '1': opc = 'Audio'
+    else: pass
+
+
+    if opc == 'Audio':
+        adi = int(input('¿Cuantos audios quieres reproducir?: '))
+        cfg = f"ffplay {Util.FFmpeg('AudioFilter', sys='win', flt=adi)}"
+    else: cfg = ''
+
+
+    return cfg
 
     return cfg
 
