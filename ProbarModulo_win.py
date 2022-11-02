@@ -87,8 +87,8 @@ def Compress_Video():
         fps = Util.FFmpeg('Frame', 'Fotorgramas (FPS)')
     else: fps = ''
 
-    cfg = (f"ffmpeg -i {pth}'{nme}' {crf} {rlt} {fps} "
-           f"{pth}'{nme}_Comprimido.mkv'")
+    cfg = (f'ffmpeg -i {pth}"{nme}" {crf} {rlt} {fps} '
+           f'"{pth}{nme}_Comprimido.mkv"')
     
     return cfg
 
@@ -111,14 +111,14 @@ def Record(opc = ''):
         adi = int(input('¿Cuantos audios quieres grabar?: '))
         Util.CleanScreen('win')
         if adi >= 2:
-            cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi, sys='win')} "
-                f"-filter_complex amix=inputs={adi} "
-                f"{Util.Path(sys='win')}'{Util.Name('Audio', sys='win')}.ogg'")
+            cfg = (f'ffmpeg {Util.FFmpeg("AudioFilter", flt = adi, sys="win")} '
+                f'-filter_complex amix=inputs={adi} '
+                f'"{Util.Path(sys="win")}{Util.Name("Audio", sys="win")}.ogg"')
         elif adi == 1:
-            cfg = (f"ffmpeg {Util.FFmpeg('Audio', sys='win')} "
-                f"{Util.Path(sys='win')}'{Util.Name('Audio', sys='win')}.ogg'")
+            cfg = (f'ffmpeg {Util.FFmpeg("Audio", sys="win")} '
+                f'"{Util.Path(sys="win")}{Util.Name("Audio", sys="win")}.ogg"')
         else:
-            cfg = Util.FFmpeg('AudioFilter', flt=adi)
+            cfg = ''
 
     elif opc == 'Desktop':
         opc = Util.Continue('¿Configuración Avanzada?', sys='win')
@@ -145,21 +145,21 @@ def Record(opc = ''):
                 Util.CleanScreen('win')
 
                 if adi >= 2:
-                    cfg = (f"ffmpeg -f gdigrab -i desktop "
-                        f"{Util.FFmpeg('AudioFilter', flt = adi, sys='win')} "
-                        f"{Quality} {Preset} {Resolution} {Frame} "
-                        f"-filter_complex amix=inputs={adi} "
-                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                    cfg = (f'ffmpeg -f gdigrab -i desktop '
+                        f'{Util.FFmpeg("AudioFilter", flt = adi, sys="win")} '
+                        f'{Quality} {Preset} {Resolution} {Frame} '
+                        f'-filter_complex amix=inputs={adi} '
+                        f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
                 elif adi == 1:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
-                        f"{Util.FFmpeg('Audio', sys='win')} "
-                        f"{Quality} {Preset} {Resolution} {Frame} "
-                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                    cfg = (f'ffmpeg -f x11grab -i :0 '
+                        f'{Util.FFmpeg("Audio", sys="win")} '
+                        f'{Quality} {Preset} {Resolution} {Frame} '
+                        f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
                 else: pass
             else:
-                cfg = (f"ffmpeg -f gdigrab -i desktop "
-                    f"{Quality} {Preset} {Resolution} {Frame} "
-                    f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                cfg = (f'ffmpeg -f gdigrab -i desktop '
+                    f'{Quality} {Preset} {Resolution} {Frame} '
+                    f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
         elif opc == 'n':
             opc = Util.Continue(Util.Title('Modo Basico', see=False) +
                       '¿Grabar con audio?')
@@ -173,18 +173,19 @@ def Record(opc = ''):
                     cfg = (f"ffmpeg -f gdigrab -i desktop "
                         f"{Util.FFmpeg('AudioFilter', flt=adi, sys='win')} "
                         f"-r 24 -s 1280x720 -filter_complex amix=inputs={adi} "
-                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                        f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
                 elif adi == 1:
                     cfg = (f"ffmpeg -f gdigrab -i desktop "
                         f"{Util.FFmpeg('Audio', sys='win')} "
                         f"-r 24 -s 1280x720 "
-                        f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                        f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
                 else: pass
             else:
                 cfg = (f"ffmpeg -f gdigrab -i desktop -r 24 -s 1280x720 "
-                    f"{Util.Path('win')}'{Util.Name('Video', sys='win')}.mkv'")
+                       f'"{Util.Path("win")}{Util.Name("Video", sys="win")}.mkv"')
         else: pass
 
+    return cfg
 
 def Reproduce(opc = ''):
     if opc == '':
@@ -202,9 +203,6 @@ def Reproduce(opc = ''):
         adi = int(input('¿Cuantos audios quieres reproducir?: '))
         cfg = f"ffplay {Util.FFmpeg('AudioFilter', sys='win', flt=adi)}"
     else: cfg = ''
-
-
-    return cfg
 
     return cfg
 

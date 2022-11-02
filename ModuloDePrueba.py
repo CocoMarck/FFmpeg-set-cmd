@@ -47,7 +47,7 @@ def Continue(txt='¿Continuar?', lang = 'español', sys='linux'):
 
 def Name(txt = 'Archivo', sys = 'linux'):
     nme = input(Title(txt=f'Nombre de {txt}', see=False) +
-              'Nombre: ')
+                'Nombre: ')
     CleanScreen(sys)
     return nme
 
@@ -65,7 +65,6 @@ def Path(sys='linux'):
     elif sys == 'win':
         if opc == "s":
             pth = input("Escribe la ruta: ")
-            pth = f'"{pth}"'
         else: pth = ''
     else: pth = ''
 
@@ -185,7 +184,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         elif sys == 'win':
             os.system('ffmpeg -list_devices true -f dshow -i dummy')
             adi = input('\nAudio: ')
-            cfg = f"-f dshow -i audio='{adi}'"
+            cfg = f'-f dshow -i audio="{adi}"'
         else: cfg = ''
 
         CleanScreen(sys)
