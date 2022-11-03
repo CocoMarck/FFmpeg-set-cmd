@@ -48,7 +48,7 @@ def App_FFmpeg():
                      f'{cfg}\n\n¿Continuar?', sys='win')
 
                 if opc == 's':
-                    os.system(cfg)
+                    os.system(f'start cmd /c "{cfg}"')
                     with open(cfg_file, 'a') as file_cfg:
                         file_cfg.write(cfg + '\n')
                 elif opc == 'n': pass
