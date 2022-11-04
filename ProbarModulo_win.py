@@ -190,16 +190,20 @@ def Record(opc = ''):
 def Reproduce(opc = ''):
     if opc == '':
         nmr = input(Util.Title('Reproducir', see=False) +
-                    '1. Audio\n\n'
+                    '1. Archivo\n'
+                    '2. Audio\n'
+                    '\n'
                     'Opcion: ')
     else: pass
 
 
-    if nmr == '1': opc = 'Audio'
+    if nmr == '1': opc = 'Archive'
+    elif nmr == '2': opc = 'Audio'
     else: pass
 
-
-    if opc == 'Audio':
+    if opc == 'Archive':
+        cfg = f'ffplay "{Util.Path(sys="win")}{Util.Name(sys="win")}"'
+    elif opc == 'Audio':
         adi = int(input('¿Cuantos audios quieres reproducir?: '))
         cfg = f"ffplay {Util.FFmpeg('AudioFilter', sys='win', flt=adi)}"
     else: cfg = ''
