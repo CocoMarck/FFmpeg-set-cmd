@@ -47,7 +47,7 @@ def Continue(txt='¿Continuar?', lang = 'español', sys='linux'):
 
 def Name(txt = 'Archivo', sys = 'linux'):
     nme = input(Title(txt=f'Nombre de {txt}', see=False) +
-                'Nombre: ')
+              'Nombre: ')
     CleanScreen(sys)
     return nme
 
@@ -90,8 +90,14 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             "#1920x1080\n"
             "#1280x720\n"
             "#854x480\n")
-        rsl_h = int(input('Ancho: '))
-        rsl_v = int(input('Alto: '))
+        try:
+            rsl_h = int(input('Ancho: '))
+            rsl_v = int(input('Alto: '))
+        except:
+            rsl_h, rsl_v = 854, 480
+            input('Tienes que escribir numereos enteros\n'
+                  f'La resolución sera {rsl_h}x{rsl_v}\n'
+                  'Preciona enter para continuar...')
         CleanScreen(sys)
 #        rsl = f'-s {rsl_h}x{rsl_v}'
         cfg = f'-s {rsl_h}x{rsl_v}'
@@ -103,7 +109,12 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         else: pass
 
         print("Rango de 0-50. Donde 0 es la mejor calidad y 50 la peor.\n")
-        crf = int(input('CRF: '))
+
+        try: crf = int(input('CRF: '))
+        except:
+            crf = 51
+            print('Tienes que escribir nuemeros enteros.')
+
         if crf <= 50:
             cfg = f'-crf {crf}'
         else:
@@ -125,7 +136,14 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             "#15\n"
             "#30\n"
             "#60\n")
-        fps = int(input('Fotogramas: '))
+
+        try: fps = int(input('Fotogramas: '))
+        except:
+            fps = 20
+            input('Tienes que escribir numeros enteros\n'
+                  f'Los fps seran {fps}\n'
+                  'Preciona enter para continuar...')
+
         cfg = f'-r {fps}'
         CleanScreen(sys)
 
@@ -135,19 +153,23 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
             else: Title(txt=txt)
         else: pass
 
-        pst = int(input("#PRESETS:\n"
-            "#Rango del 1 al 9. Donde 1 es la opcion que usa "
-            "menos cpu y 9 la que usa mas cpu.\n"
-            "1.ultrafast\n"
-            "2.superfast\n"
-            "3.veryfast\n"
-            "4.faster\n"
-            "5.fast\n"
-            "6.medium\n"
-            "7.slow\n"
-            "8.slower\n"
-            "9.veryslow\n"
-            'Preset: '))
+        try:
+            pst = int(input("#PRESETS:\n"
+                "#Rango del 1 al 9. Donde 1 es la opcion que usa "
+                "menos cpu y 9 la que usa mas cpu.\n"
+                "1.ultrafast\n"
+                "2.superfast\n"
+                "3.veryfast\n"
+                "4.faster\n"
+                "5.fast\n"
+                "6.medium\n"
+                "7.slow\n"
+                "8.slower\n"
+                "9.veryslow\n"
+                'Preset: '))
+        except:
+            pst == 0
+            print('Tienes que escribir numeros enteros.')
 
         if pst == 1: pst = '-preset ultrafast'
         elif pst == 2: pst = '-preset superfast'
@@ -184,7 +206,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         elif sys == 'win':
             os.system('ffmpeg -list_devices true -f dshow -i dummy')
             adi = input('\nAudio: ')
-            cfg = f'-f dshow -i audio="{adi}"'
+            cfg = f"-f dshow -i audio='{adi}'"
         else: cfg = ''
 
         CleanScreen(sys)
