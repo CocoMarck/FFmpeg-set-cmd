@@ -69,7 +69,7 @@ def Compress_Video():
                 '¿Comprimir Video (crf)? s/n: ')
     Util.CleanScreen('win')
     if opc == 's':
-        crf = Util.FFmpeg('Quality', 'Calidad')
+        crf = Util.FFmpeg('Quality', 'Calidad', sys='win')
     else: crf = ''
 
     
@@ -77,14 +77,14 @@ def Compress_Video():
                 '¿Rescalar video (resolución)? s/n: ')
     Util.CleanScreen('win')
     if opc == 's':
-        rlt = Util.FFmpeg('Resolution', 'Resolución de video')
+        rlt = Util.FFmpeg('Resolution', 'Resolución de video', sys='win')
     else: rlt = ''
 
     opc = input(Util.Title('Fotogramas por segundo', see=False) +
                 '¿Cambiar fps? s/n: ')
     Util.CleanScreen('win')
     if opc == 's':
-        fps = Util.FFmpeg('Frame', 'Fotorgramas (FPS)')
+        fps = Util.FFmpeg('Frame', 'Fotorgramas (FPS)', sys='win')
     else: fps = ''
 
     cfg = (f'ffmpeg -i {pth}"{nme}" {crf} {rlt} {fps} '

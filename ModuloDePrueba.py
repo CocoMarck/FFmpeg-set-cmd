@@ -109,7 +109,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
         else:
             cfg = '-crf 23'
             opc = Continue("Fuera de rango (de 0 a 50)\n"
-                          f"El CRF sera {crf}.\n¿Continuar?", sys=sys)
+                          f"El CRF sera {cfg}.\n¿Continuar?", sys=sys)
             if opc == 's': pass
             else: cfg = ''
         CleanScreen(sys)
