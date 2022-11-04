@@ -1,6 +1,15 @@
 '''Modulo de prueba para usar en mis programas jejej'''
 
-import os
+import os, platform
+
+def System():
+    sys = platform.system()
+    if sys == 'Windows': sys = 'win'
+    elif sys == 'Linux': sys = 'linux'
+    else: sys = 'linux'
+    return sys
+
+sys = System()
 
 def Title(txt = '', smb = '#', see = True, spc = 4):
     '''Mostrar un titulo'''
@@ -14,7 +23,7 @@ def Title(txt = '', smb = '#', see = True, spc = 4):
         pass
     return txt
 
-def CleanScreen(sys = 'linux'):
+def CleanScreen(sys=sys):
     '''Limpiar pantalla'''
     if sys == 'linux':
         os.system('clear')
@@ -22,7 +31,7 @@ def CleanScreen(sys = 'linux'):
         os.system('cls')
     else: pass
 
-def Separator(spc = 128, smb = '#', see = True, sys='linux'):
+def Separator(spc = 128, smb = '#', see = True, sys=sys):
     '''Separar texto'''
     txt = smb*spc
     if see == True:
@@ -33,7 +42,7 @@ def Separator(spc = 128, smb = '#', see = True, sys='linux'):
         pass
     return txt
 
-def Continue(txt='¿Continuar?', lang = 'español', sys='linux'):
+def Continue(txt='¿Continuar?', lang = 'español', sys=sys):
     idm = ['']*2
     if lang == 'español': idm[0], idm[1] = 's', 'n'
     elif lang == 'english': idm[0], idm[1] = 'y', 'n'
@@ -45,13 +54,13 @@ def Continue(txt='¿Continuar?', lang = 'español', sys='linux'):
     else: pass
     return opc
 
-def Name(txt = 'Archivo', sys = 'linux'):
+def Name(txt = 'Archivo', sys=sys):
     nme = input(Title(txt=f'Nombre de {txt}', see=False) +
               'Nombre: ')
     CleanScreen(sys)
     return nme
 
-def Path(sys='linux'):
+def Path(sys=sys):
 #    pth = ''
     CleanScreen(sys)
     opc = input(Title(txt='Ruta', see=False) +
@@ -71,7 +80,7 @@ def Path(sys='linux'):
     CleanScreen(sys)
     return pth
 
-def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys = 'linux'):
+def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys=sys):
     if opc == 'Help':
         if see == True:
             if txt == '': Title(txt='Ayuda')

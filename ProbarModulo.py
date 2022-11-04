@@ -1,5 +1,7 @@
 import ModuloDePrueba as Util
-import os, pathlib
+import os, pathlib, platform
+
+sys = Util.System()
 
 def App_FFmpeg():
 #    input(Util.FFmpeg('Resolution', False))
@@ -60,16 +62,21 @@ def App_FFmpeg():
 def Reproduce(opc = ''):
     if opc == '':
         nmr = input(Util.Title('Reproducir', see=False) +
-                    '1. Audio\n\n'
+                    '1. Archivo\n'
+                    '2. Audio\n'
+                    '\n'
                     'Opcion: ')
     else: pass
 
 
-    if nmr == '1': opc = 'Audio'
+    if nmr == '1': opc = 'Archive'
+    elif nmr == '2': opc = 'Audio'
     else: pass
 
 
-    if opc == 'Audio':
+    if opc == 'Archive':
+        cfg = f"ffplay {Util.Path()}'{Util.Name()}'"
+    elif opc == 'Audio':
         adi = int(input('¿Cuantos audios quieres reproducir?: '))
         cfg = f"ffplay {Util.FFmpeg('AudioFilter', flt=adi)}"
     else: cfg = ''
@@ -120,7 +127,12 @@ def Record(opc = ''):
     else: pass
 
     if nmr == '1': opc = 'Audio'
-    elif nmr == '2': opc = 'Desktop'
+    elif nmr == '2': 
+        opc = 'Desktop'
+        if sys == 'linux':
+            Desktop = '-f x11grab -i :0'
+        elif sys == 'win':
+            Desktop = '-f gdigrab -i desktop'
     else: pass
 
     Util.CleanScreen()
@@ -164,18 +176,18 @@ def Record(opc = ''):
                 Util.CleanScreen()
 
                 if adi >= 2:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                    cfg = (f"ffmpeg {Desktop} "
                         f"{Util.FFmpeg('AudioFilter', flt = adi)} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
                         f"-filter_complex amix=inputs={adi} "
                         f"{Util.Path()}'{Util.Name('Video')}.mkv'")
                 elif adi == 1:
-                    cfg = (f"ffmpeg -f x11grab -i :0 {Util.FFmpeg('Audio')} "
+                    cfg = (f"ffmpeg {Desktop} {Util.FFmpeg('Audio')} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
                         f"{Util.Path()}'{Util.Name('Video')}.mkv'")
                 else: pass
             else:
-                cfg = (f"ffmpeg -f x11grab -i :0 "
+                cfg = (f"ffmpeg {Desktop} "
                     f"{Quality} {Preset} {Resolution} {Frame} "
                     f"{Util.Path()}'{Util.Name('Video')}.mkv'")
         elif opc == 'n':
@@ -188,17 +200,17 @@ def Record(opc = ''):
                 Util.CleanScreen()
                 Util.Title('Modo Basico')
                 if adi >= 2:
-                    cfg = (f"ffmpeg -f x11grab -i :0 "
+                    cfg = (f"ffmpeg {Desktop} "
                         f"{Util.FFmpeg('AudioFilter', flt=adi)} "
                         f"-r 24 -s 1280x720 -filter_complex amix=inputs={adi} "
                         f"{Util.Path()}'{Util.Name('Video')}.mkv'")
                 elif adi == 1:
-                    cfg = (f"ffmpeg -f x11grab -i :0 {Util.FFmpeg('Audio')} "
+                    cfg = (f"ffmpeg {Desktop} :0 {Util.FFmpeg('Audio')} "
                         f"-r 24 -s 1280x720 "
                         f"{Util.Path()}'{Util.Name('Video')}.mkv'")
                 else: pass
             else:
-                cfg = (f"ffmpeg -f x11grab -i :0 -r 24 -s 1280x720 "
+                cfg = (f"ffmpeg {Desktop} -r 24 -s 1280x720 "
                     f"{Util.Path()}'{Util.Name('Video')}.mkv'")
         else: pass
 
