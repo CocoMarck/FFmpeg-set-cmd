@@ -81,7 +81,12 @@ def Reproduce(opc = ''):
     if opc == 'Archive':
         cfg = f'ffplay "{Util.Path()}{Util.Name()}"'
     elif opc == 'Audio':
-        adi = int(input('¿Cuantos audios quieres reproducir?: '))
+        try:
+            adi = int(input('¿Cuantos audios quieres reproducir?: '))
+        except:
+            adi = 0
+            input('Esa opción no existe, no se configurara el audio\n'
+                  'Preciona enter para continuar...')
         cfg = f'ffplay {Util.FFmpeg("AudioFilter", flt=adi)}'
     else: cfg = ''
 
@@ -143,7 +148,12 @@ def Record(opc = ''):
     cfg = ''
 
     if opc == 'Audio':
-        adi = int(input('¿Cuantos audios quieres grabar?: '))
+        try: 
+            adi = int(input('¿Cuantos audios quieres grabar?: '))
+        except:
+            adi = 0
+            input('Esa opción no existe, no se configurara el audio\n'
+                  'Preciona enter para continuar...')
         Util.CleanScreen()
         if adi >= 2:
             cfg = (f"ffmpeg {Util.FFmpeg('AudioFilter', flt = adi)} "
