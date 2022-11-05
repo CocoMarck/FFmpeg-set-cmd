@@ -225,7 +225,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys=sys):
         elif sys == 'win':
             os.system('ffmpeg -list_devices true -f dshow -i dummy')
             adi = input('\nAudio: ')
-            cfg = f"-f dshow -i audio='{adi}'"
+            cfg = f'-f dshow -i audio="{adi}"'
         else: cfg = ''
 
         CleanScreen(sys)
