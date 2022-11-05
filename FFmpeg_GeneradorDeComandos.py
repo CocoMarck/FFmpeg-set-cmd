@@ -196,8 +196,13 @@ def Record(opc = ''):
                                 '¿Grabar con audio?')
             Util.CleanScreen()
             if opc == 's':
-                adi = int(input(Util.Title('Modo Avanzado', see=False) +
-                              '¿Cuantos audios quieres grabar?: '))
+                try:
+                    adi = int(input(Util.Title('Modo Avanzado', see=False) +
+                                  '¿Cuantos audios quieres grabar?: '))
+                except:
+                    adi = 0
+                    input('Esa opción no existe, no se configurara el audio\n'
+                          'Preciona enter para continuar...')
                 Util.CleanScreen()
 
                 if adi >= 2:
