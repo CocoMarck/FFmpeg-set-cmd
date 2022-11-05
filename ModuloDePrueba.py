@@ -60,22 +60,33 @@ def Name(txt = 'Archivo', sys=sys):
     CleanScreen(sys)
     return nme
 
-def Path(sys=sys):
+def Path(txt = 'Ruta', sys=sys):
 #    pth = ''
     CleanScreen(sys)
-    opc = input(Title(txt='Ruta', see=False) +
+    pth_fin = ''
+    opc = input(Title(txt=txt, see=False) +
         "¿Elegir ruta? s/n: ")
     if sys == 'linux':
+        pth_fin = '/'
+
         if opc == "s":
-            pth = input("$HOME/")
-            pth = f"$HOME/'{pth}'"
+            pth = input("Escribe la ruta: ")
         else:
             pth = "$HOME/"
     elif sys == 'win':
+        pth_fin = '\\'
+
         if opc == "s":
             pth = input("Escribe la ruta: ")
         else: pth = ''
+
     else: pth = ''
+
+    try: pth_laststr = pth[-1]
+    except: pth_laststr = pth_fin
+    if pth_laststr == pth_fin: pass
+    else:        
+        pth = pth + pth_fin
 
     CleanScreen(sys)
     return pth
@@ -177,7 +188,7 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys=sys):
                 "9.veryslow\n"
                 'Preset: '))
         except:
-            pst == 0
+            pst = 0
             print('Tienes que escribir numeros enteros.')
 
         if pst == 1: pst = '-preset ultrafast'
@@ -195,7 +206,6 @@ def FFmpeg(opc = 'Help', txt='', flt=2, see = True, sys=sys):
                             "¿Continuar?", sys=sys)
             if opc == 's': pass
             else: cfg = ''
-            Continue(sys=sys)
         cfg = pst
         CleanScreen(sys)
 
