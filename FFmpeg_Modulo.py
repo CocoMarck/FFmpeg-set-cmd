@@ -57,6 +57,9 @@ def Continue(txt='¿Continuar?', lang = 'español', sys=sys):
 def Name(txt = 'Archivo', sys=sys):
     nme = input(Title(txt=f'Nombre de {txt}', see=False) +
               'Nombre: ')
+    if nme == '':
+        nme ='No_name'
+    else: pass
     CleanScreen(sys)
     return nme
 
@@ -71,16 +74,25 @@ def Path(txt = 'Ruta', sys=sys):
 
         if opc == "s":
             pth = input("Escribe la ruta: ")
-        else:
-            pth = "$HOME/"
+        else: pth = "$HOME/"
+
     elif sys == 'win':
         pth_fin = '\\'
 
         if opc == "s":
             pth = input("Escribe la ruta: ")
-        else: pth = ''
+        else:
+            pth = (os.path.join(os.path.join(os.environ['USERPROFILE']),
+                   'Desktop'))
 
     else: pth = ''
+
+    if pth == '':
+        if sys == 'win':
+            pth = (os.path.join(os.path.join(os.environ['USERPROFILE']),
+                   'Desktop'))
+        elif sys == 'linux': pth = '$HOME/'
+        else: pass
 
     try: pth_laststr = pth[-1]
     except: pth_laststr = pth_fin
