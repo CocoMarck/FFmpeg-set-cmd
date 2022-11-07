@@ -55,12 +55,19 @@ def Continue(txt='¿Continuar?', lang = 'español', sys=sys):
     return opc
 
 def Name(txt = 'Archivo', sys=sys):
-    nme = input(Title(txt=f'Nombre de {txt}', see=False) +
+    txt = f'Nombre de {txt}'
+    opc = Continue(Title(txt, see=False) + 
+                   '¿Elegir nombre de archivo?')
+    CleanScreen()
+    if opc == 's':
+        nme = input(Title(txt, see=False) +
               'Nombre: ')
-    if nme == '':
-        nme ='No_name'
+    else: nme = 'Sin_Nombre'
+
+    if nme == '': nme = 'Sin_Nombre'
     else: pass
     CleanScreen(sys)
+    
     return nme
 
 def Path(txt = 'Ruta', sys=sys):

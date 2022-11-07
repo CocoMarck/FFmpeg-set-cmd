@@ -1,0 +1,1 @@
+@cmd /c "python FFmpeg_GeneradorDeComandos.py"
