@@ -44,7 +44,8 @@ def App_FFmpeg():
             loop = False
             print('Saliendo...')
         else:
-            pass
+            input(f'No existe la opción "{opc}".\n'
+                  'Preciona enter para continuar...')
 
         if cfg_save == True:
             if cfg == '': pass
@@ -59,8 +60,7 @@ def App_FFmpeg():
                         file_cfg.write(cfg + '\n')
                 elif opc == 'n': pass
                 else:
-                    input(f'La opcion "{opc}" no existe\n'
-                          'Precione enter para continuar...')
+                    Continue(txt=opc, msg = True)
         else: pass    
 
 def Reproduce(opc = ''):

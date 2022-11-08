@@ -42,21 +42,26 @@ def Separator(spc = 128, smb = '#', see = True, sys=sys):
         pass
     return txt
 
-def Continue(txt='¿Continuar?', lang = 'español', sys=sys):
+def Continue(txt='¿Continuar?', lang = 'español', msg = False, sys=sys):
     idm = ['']*2
     if lang == 'español': idm[0], idm[1] = 's', 'n'
     elif lang == 'english': idm[0], idm[1] = 'y', 'n'
     else: idm[0], idm[1] = '', ''
 
-    opc = input(f'{txt} {idm[0]}/{idm[1]}: ')
-    if opc == 's': CleanScreen(sys)
-    elif opc == 'n': CleanScreen(sys)
-    elif opc == '':
-        print('No escribiste nada')
-        opc = Continue(txt=txt, lang=lang)
-    else: 
-        print(f'"{opc}" No existe')
-        opc = Continue(txt=txt, lang=lang)
+    if msg == False:
+        opc = input(f'{txt} {idm[0]}/{idm[1]}: ')
+        if opc == 's': CleanScreen(sys)
+        elif opc == 'n': CleanScreen(sys)
+        elif opc == '':
+            print('No escribiste nada')
+            opc = Continue(txt=txt, lang=lang)
+        else: 
+            print(f'"{opc}" No existe')
+            opc = Continue(txt=txt, lang=lang)
+    else:
+        opc = ''
+        input(f'La opcion "{txt}" no existe\n'
+              'Precione enter para continuar...')
         
     return opc
 
