@@ -51,23 +51,22 @@ def Continue(txt='¿Continuar?', lang = 'español', sys=sys):
     opc = input(f'{txt} {idm[0]}/{idm[1]}: ')
     if opc == 's': CleanScreen(sys)
     elif opc == 'n': CleanScreen(sys)
-    else: pass
+    elif opc == '':
+        print('No escribiste nada')
+        opc = Continue(txt=txt, lang=lang)
+    else: 
+        print(f'"{opc}" No existe')
+        opc = Continue(txt=txt, lang=lang)
+        
     return opc
 
 def Name(txt = 'Archivo', sys=sys):
-    txt = f'Nombre de {txt}'
-    opc = Continue(Title(txt, see=False) + 
-                   '¿Elegir nombre de archivo?')
-    CleanScreen()
-    if opc == 's':
-        nme = input(Title(txt, see=False) +
+    nme = input(Title(txt=f'Nombre de {txt}', see=False) +
               'Nombre: ')
-    else: nme = 'Sin_Nombre'
-
-    if nme == '': nme = 'Sin_Nombre'
+    if nme == '':
+        nme ='No_name'
     else: pass
     CleanScreen(sys)
-    
     return nme
 
 def Path(txt = 'Ruta', sys=sys):
