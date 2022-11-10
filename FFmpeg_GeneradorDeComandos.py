@@ -60,7 +60,7 @@ def App_FFmpeg():
                         file_cfg.write(cfg + '\n')
                 elif opc == 'n': pass
                 else:
-                    Continue(txt=opc, msg = True)
+                    Util.Continue(txt=opc, msg = True)
         else: pass    
 
 def Reproduce(opc = ''):
