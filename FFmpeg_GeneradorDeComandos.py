@@ -129,20 +129,21 @@ def Compress_Video():
 
 def Record(opc = ''):
     if opc == '':
-        nmr = input(Util.Title('Opciones para grabar', see=False) +
+        opc = input(Util.Title('Opciones para grabar', see=False) +
                     '1. Grabar Audio\n'
                     '2. Grabar Pantalla\n\n'
                     f'Opción: ')
+        if opc == '1': opc = 'Audio'
+        elif opc == '2': opc = 'Desktop'
+        else: pass
+        
     else: pass
 
-    if nmr == '1': opc = 'Audio'
-    elif nmr == '2': 
-        opc = 'Desktop'
-        if sys == 'linux':
-            Desktop = '-f x11grab -i :0'
-        elif sys == 'win':
-            Desktop = '-f gdigrab -i desktop'
-    else: pass
+    if sys == 'linux':
+        Desktop = '-f x11grab -i :0'
+    elif sys == 'win':
+        Desktop = '-f gdigrab -i desktop'
+    else: Desktop = '-f x11grab -i :0'
 
     Util.CleanScreen()
     cfg = ''
@@ -169,16 +170,16 @@ def Record(opc = ''):
         opc = Util.Continue('¿Configuración Avanzada?')
         Util.CleanScreen()
 
-        if opc == 's': 
+        Path_Fin = f'"{Util.Path("Ruta de Salida")}{Util.Name("Video")}.mkv"'            
+        if opc == 's':
             opc = 'Modo Avanzado'
-            Util.Title(txt = opc)
-            Path_Fin = f'"{Util.Path("Salida")}{Util.Name("Video")}.mkv"'
+
         elif opc == 'n':
             opc = 'Modo Basico'
-            Util.Title(txt = opc)
-            Path_Fin = f'"{Util.Path("Salida")}{Util.Name("Video")}.mkv"'
-        else: pass
 
+        else: pass
+        
+        Util.CleanScreen()
         if opc == 'Modo Avanzado':
             Util.Title(txt = opc)
             Quality = Util.FFmpeg('Quality')
@@ -187,7 +188,7 @@ def Record(opc = ''):
             Preset = Util.FFmpeg('Preset')
 
             Util.Title(txt = opc)
-            Resolution = Util.FFmpeg('Resolution', 'Salida')
+            Resolution = Util.FFmpeg('Resolution', 'Resolución de Salida')
 
             Util.Title(txt = opc)
             Frame = Util.FFmpeg('Frame')
@@ -198,13 +199,15 @@ def Record(opc = ''):
             if opc == 's':
                 try:
                     adi = int(input(Util.Title('Modo Avanzado', see=False) +
-                                  '¿Cuantos audios quieres grabar?: '))
+                              '¿Cuantos audios quieres grabar?: '))
+                    if adi <= 0: adi = 0
+
                 except:
                     adi = 0
                     input('Esa opción no existe, no se configurara el audio\n'
                           'Preciona enter para continuar...')
+                          
                 Util.CleanScreen()
-
                 if adi >= 2:
                     cfg = (f"ffmpeg {Desktop} "
                         f"{Util.FFmpeg('AudioFilter', flt = adi)} "
@@ -215,20 +218,31 @@ def Record(opc = ''):
                     cfg = (f"ffmpeg {Desktop} {Util.FFmpeg('Audio')} "
                         f"{Quality} {Preset} {Resolution} {Frame} "
                         f"{Path_Fin}")
-                else: pass
+                else:
+                    cfg = (f"ffmpeg {Desktop} "
+                        f"{Quality} {Preset} {Resolution} {Frame} "
+                        f"{Path_Fin}")
             else:
                 cfg = (f"ffmpeg {Desktop} "
                     f"{Quality} {Preset} {Resolution} {Frame} "
                     f"{Path_Fin}")
+
         elif opc == 'Modo Basico':
             opc = Util.Continue(Util.Title(txt = opc, see=False) +
                       '¿Grabar con audio?')
             Util.CleanScreen()
             if opc == 's':
-                adi = int(input(Util.Title(txt = opc, see=False) +
-                              '¿Cuantos audios quieres grabar?: '))
+                try:
+                    adi = int(input(Util.Title('Modo Basico', see=False) +
+                                  '¿Cuantos audios quieres grabar?: '))
+                    if adi <= 0: adi = 0
+
+                except:
+                    adi = 0
+                    input('Esa opción no existe, no se configurara el audio\n'
+                          'Preciona enter para continuar...')
+                
                 Util.CleanScreen()
-                Util.Title(txt = opc)
                 if adi >= 2:
                     cfg = (f"ffmpeg {Desktop} "
                         f"{Util.FFmpeg('AudioFilter', flt=adi)} "
@@ -238,11 +252,13 @@ def Record(opc = ''):
                     cfg = (f"ffmpeg {Desktop} :0 {Util.FFmpeg('Audio')} "
                         f"-r 24 -s 1280x720 "
                         f"{Path_Fin}")
-                else: pass
+                else:
+                    cfg = (f"ffmpeg {Desktop} -r 24 -s 1280x720 "
+                        f"{Path_Fin}")
             else:
                 cfg = (f"ffmpeg {Desktop} -r 24 -s 1280x720 "
                     f"{Path_Fin}")
-        else: pass
+        else: input('Opción inexistente\nPrecione enter para continuar...')
 
     return cfg
 
