@@ -37,20 +37,20 @@ class Dialog_Start(Gtk.Dialog):
 class Command_Run(Gtk.Dialog):
     def __init__(self, parent, cfg='', txt='Ejecutar Comando'):
         super().__init__(title='Ejecutar comando', transient_for=parent, flags=0)
-        self.set_default_size(512, 0)
+        self.set_default_size(256, 0)
         self.cfg = cfg
         
         box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         
         label = Gtk.Label()
         label.set_markup(f'<b>Comando</b>')
-        label.set_justify(Gtk.Justification.CENTER)
+        #label.set_justify(Gtk.Justification.CENTER)
         label.set_line_wrap(True)
         box_v.pack_start(label, True, True, 0)
         
         label = Gtk.Label()
         label.set_markup(f'<i>{self.cfg}</i>')
-        label.set_justify(Gtk.Justification.LEFT)
+        #label.set_justify(Gtk.Justification.LEFT)
         label.set_line_wrap(True)
         label.set_selectable(True)
         box_v.pack_start(label, True, True, 0)
@@ -64,32 +64,34 @@ class Command_Run(Gtk.Dialog):
         self.show_all()
         
     def evt_command_run(self, widget):
-        os.system(f'xfce4-terminal --startup-id= -e "{self.cfg}"')
+        os.system(f"xfce4-terminal --startup-id= -e '{self.cfg}'")
         self.destroy()
 
 
 class Dialog_FFmpegVideo(Gtk.Dialog):
     def __init__(self, parent, opc='CompressVideos'):
-        if opc == 'VideoCompress': txt_title = 'Comprimir Video'
-        elif opc == 'VideoRecord': txt_title = 'Grabar Video'
+        self.cfg = ''
+        self.opc = opc
+    
+        if self.opc == 'VideoCompress': self.txt_title = 'Comprimir Video'
+        elif self.opc == 'VideoRecord': self.txt_title = 'Grabar Video'
         else: 'Title for else'
     
         super().__init__(title=f'{opc}', transient_for=parent, flags=0)
-        self.set_default_size(256, 128)
+        self.set_default_size(352, 0)
         
         box_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
         
         label_title = Gtk.Label()
-        label_title.set_markup(f'<b>{txt_title}</b>\n')
+        label_title.set_markup(f'<big><b>{self.txt_title}</b></big>\n')
         box_data.pack_start(label_title, True, True, 8)
         
-        if opc == 'VideoCompress':
+        if self.opc == 'VideoCompress':
             btn_path = Gtk.Button(label='Elegir Video')
-            btn_path.connect("clicked", self.evt_path)
-            box_data.pack_start(btn_path, True, True, 0)
-        elif opc == 'VideoRecord':
-            print('Seleccionar carpeta y escribir nombre de video')
-        else: pass
+        elif self.opc == 'VideoRecord':
+            btn_path = Gtk.Button(label='Guardar video como')
+        btn_path.connect("clicked", self.evt_path)
+        box_data.pack_start(btn_path, True, True, 0)
         self.pth = ''
 
 
@@ -148,14 +150,52 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         self.rez_entryV.set_width_chars(8)
         rez_box.pack_start(self.rez_entryV, False, False, 0)
         
+        if self.opc == 'VideoRecord':
+            preset_box = Gtk.Box(spacing=4)
+            box_data.pack_start(preset_box, True, True, 0)
+            
+            self.preset_CheckButton = Gtk.CheckButton(label='Uso de CPU')
+            self.preset_CheckButton.set_active(True)
+            preset_box.pack_start(self.preset_CheckButton, False, False, 0)
+            
+            preset_ListStore = Gtk.ListStore(str)
+            presets = [
+                '-preset ultrafast',
+                '-preset superfast',
+                '-preset veryfast',
+                '-preset faster',
+                '-preset fast',
+                '-preset medium',
+                '-preset slow',
+                '-preset slower',
+                '-preset veryslow',
+            ]
+            for preset in presets:
+                preset_ListStore.append([preset])
+                
+            self.preset_ComboBox = Gtk.ComboBox.new_with_model(preset_ListStore)
+            preset_CellRendererText = Gtk.CellRendererText()
+            self.preset_ComboBox.pack_start(preset_CellRendererText, True)
+            self.preset_ComboBox.add_attribute(preset_CellRendererText, "text", 0)
+            self.preset_ComboBox.set_active(5)
+            preset_box.pack_start(self.preset_ComboBox, False, False, 16)
+            
+        else: self.preset_ComboBox = ''
         
-        self.label_path = Gtk.Label(label='(Aqui se mostrara el Video)')
+        
+        self.label_path = Gtk.Label()
+        self.label_path.set_markup('<b>(Aqui se mostrara el Video)</b>')
         self.label_path.set_line_wrap(True)
-        box_data.pack_start(self.label_path, True, True, 8)
+        box_data.pack_start(self.label_path, True, True, 0)
         
-        btn_add_cfg = Gtk.Button(label=txt_title)
+        self.label_cfg = Gtk.Label()
+        self.label_cfg.set_line_wrap(True)
+        self.label_cfg.set_selectable(True)
+        box_data.pack_start(self.label_cfg, True, True, 0)
+        
+        btn_add_cfg = Gtk.Button(label=self.txt_title)
         btn_add_cfg.connect('clicked', self.evt_add_cfg)
-        box_data.pack_start(btn_add_cfg, True, True, 0)
+        box_data.pack_start(btn_add_cfg, True, True, 4)
         
         box_main = self.get_content_area()
         box_main.add(box_data)
@@ -164,59 +204,107 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
     def evt_add_cfg(self, widget):
         Util.CleanScreen()
         
+        if self.crf_CheckButton.get_active() == True:
+            crf = FFmpeg.CRF(self.crf_SpinButton.get_value_as_int())
+        else: crf = ''
+            
+        if self.fps_CheckButton.get_active() == True:
+            fps = FFmpeg.FPS(self.fps_SpinButton.get_value_as_int())
+        else: fps = ''
+            
+        if self.rez_CheckButton.get_active() == True:
+            rez_HxV = FFmpeg.Resolution(
+                rez_H=self.rez_entryH.get_text(), 
+                rez_V=self.rez_entryV.get_text()
+            )
+        else: rez_HxV = ''
+        
+        try:
+            preset_iter = self.preset_ComboBox.get_active_iter()
+            preset_model = self.preset_ComboBox.get_model()
+            preset = preset_model[preset_iter][0]
+        except:
+            preset = 'Sin preset'
+        
         if self.pth == '': print('No se a seleccionado el Video')
         else:
-            if self.crf_CheckButton.get_active() == True:
-                crf = FFmpeg.CRF(self.crf_SpinButton.get_value_as_int())
-            else: crf = ''
-            
-            if self.fps_CheckButton.get_active() == True:
-                fps = FFmpeg.FPS(self.fps_SpinButton.get_value_as_int())
-            else: fps = ''
-            
-            if self.rez_CheckButton.get_active() == True:
-                rez_HxV = FFmpeg.Resolution(
-                    rez_H=self.rez_entryH.get_text(), 
-                    rez_V=self.rez_entryV.get_text()
-                )
-            else: rez_HxV = ''
-
             print(
+                f'{preset}\n'
                 f'Video seleccionado: "{self.pth}\n"'
                 f'El CRF sera "{crf}"\n'
                 f'Los FPS seran "{fps}"\n'
                 f'La resolución sera "{rez_HxV}"'
             )
             
-            cfg = (f'ffmpeg -i "{self.pth}" {crf} {fps} {rez_HxV} '
-                f'"{self.pth}_Comprimido.mkv"'
+            if self.opc == 'VideoCompress':
+                self.cfg = (
+                    f'ffmpeg -i "{self.pth}" {crf} {fps} {rez_HxV} '
+                    f'"{self.pth}_Comprimido.mkv"'
+                )
+            elif self.opc == 'VideoRecord':
+                self.cfg = (
+                    f'ffmpeg -f x11grab -i :0 {crf} {preset} {fps} '
+                    f'{rez_HxV} "{self.pth}.mkv"'
+                )
+                txt=''
+            
+            self.label_cfg.set_markup(
+                f'<small><i>{self.cfg}</i></small>'
             )
-            dialog = Command_Run(self, cfg=cfg, txt='Comprimir Video')
+            
+            dialog = Command_Run(self, cfg=self.cfg, txt=self.txt_title)
             rsp = dialog.run()
             dialog.destroy()
+            #dialog = Gtk.MessageDialog(
+            #    transient_for=self,
+            #    flags=0,
+            #    message_type=Gtk.MessageType.QUESTION,
+            #    buttons=Gtk.ButtonsType.YES_NO,
+            #    text=self.txt_title
+            #)
+            #dialog.format_secondary_text(self.cfg)
+            #rsp = dialog.run()
+            #if rsp == Gtk.ResponseType.YES:
+            #    os.system(f"xfce4-terminal --startup-id= -e '{self.cfg}'")
+            #elif rsp == Gtk.ResponseType.NO:
+            #    print('NO Precionado')
+            #dialog.destroy()
         
             
     def evt_path(self, widget):
-        dialog = Gtk.FileChooserDialog(
-            title='Porfavor elige un video', parent=self,
-            action=Gtk.FileChooserAction.OPEN
-        )
-        dialog.add_buttons(
-            Gtk.STOCK_CANCEL,
-            Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OPEN,
-            Gtk.ResponseType.OK,
-        )
+        if self.opc == 'VideoRecord':
+            dialog = Gtk.FileChooserDialog(
+                title='Guardar video como', parent=self,
+                action=Gtk.FileChooserAction.SAVE
+            )
+            dialog.add_buttons(
+                Gtk.STOCK_CANCEL,
+                Gtk.ResponseType.CANCEL,
+                Gtk.STOCK_SAVE,
+                Gtk.ResponseType.OK,
+            )
+        elif self.opc == 'VideoCompress':    
+            dialog = Gtk.FileChooserDialog(
+                title='Porfavor elige un video', parent=self,
+                action=Gtk.FileChooserAction.OPEN
+            )
+            dialog.add_buttons(
+                Gtk.STOCK_CANCEL,
+                Gtk.ResponseType.CANCEL,
+                Gtk.STOCK_OPEN,
+                Gtk.ResponseType.OK,
+            )
         
-        # crear "def add_flt ()" para agregar los filtros correspondientes
         self.add_flt(dialog)
-        
+            
         rsp = dialog.run()
         if rsp == Gtk.ResponseType.OK:
             self.pth = dialog.get_filename()
             self.label_path.set_text(f'Archivo: {self.pth}')
-            print('Abrir clickeado')
+            print('Video Agregado')
+            
         elif rsp == Gtk.ResponseType.CANCEL:
+            self.cfg = ''
             print('Cancelar clickeado')
             
         dialog.destroy()
@@ -226,6 +314,7 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         flt_video.set_name("Archivos de Video")
         flt_video.add_mime_type("video/*")
         dialog.add_filter(flt_video)
+        
             
 
 class Window_Main(Gtk.Window):
