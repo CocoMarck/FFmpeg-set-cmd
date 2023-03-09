@@ -64,7 +64,7 @@ class Command_Run(Gtk.Dialog):
         self.show_all()
         
     def evt_command_run(self, widget):
-        os.system(f"xfce4-terminal --startup-id= -e '{self.cfg}'")
+        Util.Command_Run(self.cfg)
         self.destroy()
 
 
@@ -226,7 +226,21 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         except:
             preset = 'Sin preset'
         
-        if self.pth == '': print('No se a seleccionado el Video')
+        if self.pth == '':
+            print('No se a establecido el Video')
+            dialog = Gtk.MessageDialog(
+                transient_for=self,
+                flags=0,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text='No se a establecido el Video'
+            )
+            dialog.format_secondary_text(
+                'Selecciona aceptar para continuar'
+            )
+            dialog.run()
+            dialog.destroy()
+            
         else:
             print(
                 f'{preset}\n'
@@ -364,7 +378,7 @@ class Window_Main(Gtk.Window):
         print('Abrir archivo de texto')
         
     def evt_exit(self, widget):
-        exit()
+        self.destroy() # o tambien 'exit()'
         
 
 win = Window_Main()
