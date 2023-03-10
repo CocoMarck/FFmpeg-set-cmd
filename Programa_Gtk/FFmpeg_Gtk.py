@@ -1,40 +1,55 @@
 import Modulo_Util as Util
-import os
+import Modulo_FFmpeg as FFmpeg
+import os, pathlib
 
 import gi
-import Modulo_FFmpeg as FFmpeg
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 
 sys = Util.System()
+cfg_file = 'FFmpeg_cfg.txt'
 
-class Dialog_Start(Gtk.Dialog):
-    def __init__(self, parent):
-        super().__init__(title='Dialogo Empezar', transient_for=parent, flags=0)
-        self.set_default_size(256, 64)
-                
-        box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+class Dialog_TextView(Gtk.Dialog):
+    def __init__(
+        self, parent,
+        text = 'Texto\nSalto de linea y etc...'
+    ):
+        super().__init__(title='Text', transient_for=parent, flags=0)
+        self.set_default_size(512, 256)
+
+        box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+
+        text_scroll = Gtk.ScrolledWindow()
+        text_scroll.set_hexpand(True)
+        text_scroll.set_vexpand(True)
         
-        label_title = Gtk.Label()
-        label_title.set_markup('<b>Dialogo Empezar</b>')
-        label_title.set_justify(Gtk.Justification.CENTER)
-        box_v.pack_start(label_title, True, True, 0)
+        text_view = Gtk.TextView()
+        #text_view.set_size_request(512, 256)
+        text_view.set_editable(False)
+        text_buffer = text_view.get_buffer()
+        text_buffer.set_text(text)
+        text_scroll.add(text_view)
         
-        btn_demo = Gtk.Button(label='Boton de prueba')
-        btn_demo.connect('clicked', self.evt_demo)
-        box_v.pack_start(btn_demo, True, True, 0)
+        box_v.pack_start(text_scroll, True, True, 0)
+        
+        exit_box = Gtk.Box(spacing=4)
+        box_v.pack_start(exit_box, False, True, 0)
+        
+        exit_btn = Gtk.Button(label='Salir')
+        exit_btn.connect('clicked', self.evt_exit)
+        exit_box.pack_start(exit_btn, True, True, 0)
         
         box_main = self.get_content_area()
         box_main.add(box_v)
         self.show_all()
         
-    def evt_demo(self, widget):
-        print('Boton de prueba, precionado')
+    def evt_exit(self, widget):
+        self.destroy()
 
 
-class Command_Run(Gtk.Dialog):
+class Dialog_Command_Run(Gtk.Dialog):
     def __init__(self, parent, cfg='', txt='Ejecutar Comando'):
         super().__init__(title='Ejecutar comando', transient_for=parent, flags=0)
         self.set_default_size(256, 0)
@@ -73,9 +88,17 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         self.cfg = ''
         self.opc = opc
     
-        if self.opc == 'VideoCompress': self.txt_title = 'Comprimir Video'
-        elif self.opc == 'VideoRecord': self.txt_title = 'Grabar Video'
-        else: 'Title for else'
+        if self.opc == 'VideoCompress':
+            self.txt_title = 'Comprimir Video'
+            btn_path_str = 'Elegir Video'
+            
+        elif self.opc == 'VideoRecord':
+            self.txt_title = 'Grabar Video'
+            btn_path_str = 'Guardar Video como...'
+            
+        else: 
+            self.txt_title = 'Title for else'
+            btn_path_str = 'Button for else'
     
         super().__init__(title=f'{opc}', transient_for=parent, flags=0)
         self.set_default_size(352, 0)
@@ -85,11 +108,9 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         label_title = Gtk.Label()
         label_title.set_markup(f'<big><b>{self.txt_title}</b></big>\n')
         box_data.pack_start(label_title, True, True, 8)
-        
-        if self.opc == 'VideoCompress':
-            btn_path = Gtk.Button(label='Elegir Video')
-        elif self.opc == 'VideoRecord':
-            btn_path = Gtk.Button(label='Guardar video como')
+
+
+        btn_path = Gtk.Button(label=btn_path_str)
         btn_path.connect("clicked", self.evt_path)
         box_data.pack_start(btn_path, True, True, 0)
         self.pth = ''
@@ -150,6 +171,7 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         self.rez_entryV.set_width_chars(8)
         rez_box.pack_start(self.rez_entryV, False, False, 0)
         
+        # Preset Zona de ComboBox
         if self.opc == 'VideoRecord':
             preset_box = Gtk.Box(spacing=4)
             box_data.pack_start(preset_box, True, True, 0)
@@ -193,9 +215,9 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         self.label_cfg.set_selectable(True)
         box_data.pack_start(self.label_cfg, True, True, 0)
         
-        btn_add_cfg = Gtk.Button(label=self.txt_title)
-        btn_add_cfg.connect('clicked', self.evt_add_cfg)
-        box_data.pack_start(btn_add_cfg, True, True, 4)
+        add_cfg_btn = Gtk.Button(label=self.txt_title)
+        add_cfg_btn.connect('clicked', self.evt_add_cfg)
+        box_data.pack_start(add_cfg_btn, True, True, 0)
         
         box_main = self.get_content_area()
         box_main.add(box_data)
@@ -266,9 +288,14 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
                 f'<small><i>{self.cfg}</i></small>'
             )
             
-            dialog = Command_Run(self, cfg=self.cfg, txt=self.txt_title)
+            # Ejecutar comando
+            dialog = Dialog_Command_Run(self, cfg=self.cfg, txt=self.txt_title)
             rsp = dialog.run()
             dialog.destroy()
+            
+            # Agragar comando a la configuración
+            with open(cfg_file, 'a') as file_cfg:
+                file_cfg.write(self.cfg + f'\n#{Util.Separator(see=False)}\n')
             #dialog = Gtk.MessageDialog(
             #    transient_for=self,
             #    flags=0,
@@ -375,6 +402,13 @@ class Window_Main(Gtk.Window):
         print('Grabar Audio o video')
         
     def evt_text_view(self, widget):
+        if pathlib.Path(cfg_file).exists():
+            text = Util.Text_Read(cfg_file, 'ModeText')
+        else: 
+            text = f'No existe el archivo de texto "{cfg_file}"'
+        dialog = Dialog_TextView(self, text=text)
+        response = dialog.run()
+        dialog.destroy()
         print('Abrir archivo de texto')
         
     def evt_exit(self, widget):

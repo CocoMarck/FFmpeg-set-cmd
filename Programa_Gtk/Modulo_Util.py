@@ -198,7 +198,7 @@ def Path(pth, sys=sys):
     return pth
     
 
-def Text_Read(file_and_path='', opc=''):
+def Text_Read(file_and_path='', opc='ModeList'):
     '''Lee archivos de texto y adjunta la información en una lista, variable o diccionario'''
     text_final = ''
 
@@ -213,7 +213,7 @@ def Text_Read(file_and_path='', opc=''):
                 text_final += text_line
                 
             if opc == 'ModeTextOnly':
-                text_final.replace('\n', ' ')
+                text_final = text_final.replace('\n', ' ')
 
         elif opc == 'ModeDict':
             text_final = {}
@@ -222,20 +222,32 @@ def Text_Read(file_and_path='', opc=''):
             for line in text_read.splitlines():
                 nmr += 1
                 text_final.update({nmr : line})
+                
+        elif opc == 'ModeList':
+            text_final = text_read
 
         else: text_final = text_read
+        
     else: text_final = 'No existe ese texto'
 
     return text_final
+
     
 def Command_Run(cmd='dir'):
     '''Se encarga de abrir una consola/terminal y ejecutar un comando espeficificado'''
     if sys == 'win':
-        txt = Text_Read('Modulo_Util_Win.dat', 'ModeTextOnly')
+        txt = Text_Read('Modulo_Util_Win.dat', 'ModeText')
         smb = '"'
     elif sys == 'linux':
-        txt = Text_Read('Modulo_Util_Linux.dat', 'ModeTextOnly')
+        txt = Text_Read('Modulo_Util_Linux.dat', 'ModeText')
         smb = "'"
+    
+    line_go = []
+    for line in txt.split('\n'):
+        if not line.startswith('#'):
+            line_go.append(line)
         
-    #print(f'{txt} {smb}{cmd}{smb}')
+    txt = ('\n'.join(line_go)).replace('\n', ' ')
+        
+    print(f'{txt} {smb}{cmd}{smb}')
     os.system(f'{txt} {smb}{cmd}{smb}')
