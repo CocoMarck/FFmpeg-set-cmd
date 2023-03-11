@@ -83,7 +83,7 @@ class Dialog_Command_Run(Gtk.Dialog):
         self.destroy()
 
 
-class Dialog_FFmpegVideo(Gtk.Dialog):
+class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
     def __init__(self, parent, opc='CompressVideos'):
         self.cfg = ''
         self.opc = opc
@@ -171,7 +171,7 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         self.rez_entryV.set_width_chars(8)
         rez_box.pack_start(self.rez_entryV, False, False, 0)
         
-        # Preset Zona de ComboBox
+        # Preset Zona de preset y audio
         if self.opc == 'VideoRecord':
             preset_box = Gtk.Box(spacing=4)
             box_data.pack_start(preset_box, True, True, 0)
@@ -200,9 +200,24 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
             self.preset_ComboBox.pack_start(preset_CellRendererText, True)
             self.preset_ComboBox.add_attribute(preset_CellRendererText, "text", 0)
             self.preset_ComboBox.set_active(5)
-            preset_box.pack_start(self.preset_ComboBox, False, False, 16)
+            preset_box.pack_start(self.preset_ComboBox, False, False, 44)
             
-        else: self.preset_ComboBox = ''
+            audio_box = Gtk.Box(spacing=0)
+            box_data.pack_start(audio_box, True, True, 0)
+            
+            self.audio_CheckButton = Gtk.CheckButton(label='Audio')
+            self.audio_CheckButton.connect('toggled', self.evt_audio)
+            self.audio_CheckButton.set_active(False)
+            audio_box.pack_start(self.audio_CheckButton, False, False, 0)
+            
+            self.audio_Entry = Gtk.Entry()
+            self.audio_Entry.set_width_chars(8)
+            #self.audio_Entry.set_placeholder('Audio')
+            audio_box.pack_start(self.audio_Entry, False, False, 86)
+            
+        else: 
+            self.audio_Entry = ''
+            self.preset_ComboBox = ''
         
         
         self.label_path = Gtk.Label()
@@ -223,6 +238,27 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
         box_main.add(box_data)
         self.show_all()
         
+    def evt_audio(self, widget):
+        if self.audio_CheckButton.get_active() == True:
+            if (
+                sys == 'linux' or
+                sys == 'win'
+            ):
+                if sys == 'linux':
+                    cmd = 'pactl list short sources'
+                elif sys == 'win':
+                    cmd = 'ffmpeg -list_devices true -f dshow -i dummy'
+                dialog = Dialog_TextView(
+                             self,
+                             text=(
+                                 'Para ver los dispositivos de audio.\n'
+                                 'Ejecuta este comando en terminal/consola.\n\n'
+                                 f'Comando: {cmd}'
+                             )
+                         )
+                response = dialog.run()
+                dialog.destroy()
+        
     def evt_add_cfg(self, widget):
         Util.CleanScreen()
         
@@ -241,12 +277,20 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
             )
         else: rez_HxV = ''
         
+        # Opciones solo disponibles en VideoRecord
+        preset = ''
+        audio = ''
         try:
-            preset_iter = self.preset_ComboBox.get_active_iter()
-            preset_model = self.preset_ComboBox.get_model()
-            preset = preset_model[preset_iter][0]
-        except:
-            preset = 'Sin preset'
+            if self.preset_CheckButton.get_active() == True:
+                preset_iter = self.preset_ComboBox.get_active_iter()
+                preset_model = self.preset_ComboBox.get_model()
+                preset = preset_model[preset_iter][0]
+            else: pass
+            
+            if self.audio_CheckButton.get_active() == True:
+                audio = FFmpeg.Audio(self.audio_Entry.get_text())
+            else: pass
+        except: pass
         
         if self.pth == '':
             print('No se a establecido el Video')
@@ -265,11 +309,12 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
             
         else:
             print(
-                f'{preset}\n'
                 f'Video seleccionado: "{self.pth}\n"'
-                f'El CRF sera "{crf}"\n'
-                f'Los FPS seran "{fps}"\n'
-                f'La resolución sera "{rez_HxV}"'
+                f'CRF: "{crf}"\n'
+                f'FPS: "{fps}"\n'
+                f'Resolución: "{rez_HxV}"\n'
+                f'Preset: "{preset}"\n'
+                f'Audio: "{audio}"'
             )
             
             if self.opc == 'VideoCompress':
@@ -278,8 +323,10 @@ class Dialog_FFmpegVideo(Gtk.Dialog):
                     f'"{self.pth}_Comprimido.mkv"'
                 )
             elif self.opc == 'VideoRecord':
+                if self.fps_CheckButton.get_active() == False:
+                    fps = FFmpeg.FPS(10)
                 self.cfg = (
-                    f'ffmpeg -f x11grab -i :0 {crf} {preset} {fps} '
+                    f'ffmpeg -f x11grab -i :0 {audio} {crf} {preset} {fps} '
                     f'{rez_HxV} "{self.pth}.mkv"'
                 )
                 txt=''
@@ -390,13 +437,13 @@ class Window_Main(Gtk.Window):
         self.add(box_v)
         
     def evt_ffmpeg_compress(self, widget):
-        dialog = Dialog_FFmpegVideo(self, opc='VideoCompress')
+        dialog = Dialog_FFmpeg_VideoAudio(self, opc='VideoCompress')
         response = dialog.run()
         dialog.destroy()
         print('Comprimir videos')
         
     def evt_ffmpeg_record(self, widget):
-        dialog = Dialog_FFmpegVideo(self, opc='VideoRecord')
+        dialog = Dialog_FFmpeg_VideoAudio(self, opc='VideoRecord')
         response = dialog.run()
         dialog.destroy()
         print('Grabar Audio o video')

@@ -1,6 +1,6 @@
 '''Modulo de prueba para usar en mis programas jejej'''
 
-import os, platform, pathlib
+import os, platform, pathlib, subprocess
 
 
 def System(opc = 'System'):
@@ -241,6 +241,7 @@ def Command_Run(cmd='dir'):
     elif sys == 'linux':
         txt = Text_Read('Modulo_Util_Linux.dat', 'ModeText')
         smb = "'"
+        
     
     line_go = []
     for line in txt.split('\n'):
@@ -251,3 +252,5 @@ def Command_Run(cmd='dir'):
         
     print(f'{txt} {smb}{cmd}{smb}')
     os.system(f'{txt} {smb}{cmd}{smb}')
+    #print(f'{txt} execute {cmd}')
+    #subprocess.Popen([txt, '-e', cmd], stdin=subprocess.PIPE)

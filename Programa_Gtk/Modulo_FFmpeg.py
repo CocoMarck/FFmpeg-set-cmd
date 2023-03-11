@@ -52,6 +52,43 @@ def CRF(crf=30):
     cfg = f'-crf {crf}'
 
     return cfg
+
+
+def Audio(audio=0):
+    if sys == 'linux':
+        try:
+            audio = int(audio)
+        except:
+            audio = 0
+        
+        #os.system('pactl list short sources') 
+        audio = f'-f pulse -i {audio}'
+
+    elif sys == 'win':
+        #os.system('ffmpeg -list_devices true -f dshow -i dummy')
+        audio = f'-f dshow -i audio={audio}'
+    
+    return audio
+
+
+def Audio_Filter(flt=0, audio=0):
+    adi = [''] * flt
+    nmr = flt
+    #txt = ''
+    audio_filter = ''
+    if flt > 0:
+        while flt > 0:
+            adi[flt - 1] = Audio(audio=audio)
+            flt = flt - 1
+    else:
+        audio_Filter = ''
+        
+    while nmr > 0:
+        #txt = adi[nmr - 1] + ' ' + txt
+        audio_filter = adi[nmr - 1] + ' ' + audio_filter
+        nmr = nmr - 1
+        
+    return audio_filter
     
 
 def FFmpeg(
