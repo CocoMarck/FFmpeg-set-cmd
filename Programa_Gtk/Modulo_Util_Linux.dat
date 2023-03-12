@@ -1,1 +1,2 @@
-xfce4-terminal --startup-id= -e
+xterm -e
+# xfce4-terminal --startup-id= -e
