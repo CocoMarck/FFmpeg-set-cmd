@@ -1,4 +1,5 @@
 import Modulo_Util as Util
+import Modulo_Util_Gtk as Util_Gtk
 import Modulo_FFmpeg as FFmpeg
 import os, pathlib
 
@@ -11,84 +12,8 @@ from gi.repository import Gtk
 sys = Util.System()
 cfg_file = 'FFmpeg_cfg.txt'
 
-class Dialog_TextView(Gtk.Dialog):
-    def __init__(
-        self, parent,
-        text = 'Texto\nSalto de linea y etc...'
-    ):
-        super().__init__(title='Text', transient_for=parent, flags=0)
-        self.set_default_size(512, 256)
-
-        box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-
-        text_scroll = Gtk.ScrolledWindow()
-        text_scroll.set_hexpand(True)
-        text_scroll.set_vexpand(True)
-        
-        text_view = Gtk.TextView()
-        #text_view.set_size_request(512, 256)
-        text_view.set_editable(False)
-        text_buffer = text_view.get_buffer()
-        text_buffer.set_text(text)
-        text_scroll.add(text_view)
-        
-        box_v.pack_start(text_scroll, True, True, 0)
-        
-        exit_box = Gtk.Box(spacing=4)
-        box_v.pack_start(exit_box, False, True, 0)
-        
-        exit_btn = Gtk.Button(label='Salir')
-        exit_btn.connect('clicked', self.evt_exit)
-        exit_box.pack_start(exit_btn, True, True, 0)
-        
-        box_main = self.get_content_area()
-        box_main.add(box_v)
-        self.show_all()
-        
-    def evt_exit(self, widget):
-        self.destroy()
-
-
-class Dialog_Command_Run(Gtk.Dialog):
-    def __init__(self, parent, cfg='', txt='Ejecutar Comando'):
-        super().__init__(title='Ejecutar comando', transient_for=parent, flags=0)
-        self.set_default_size(256, -1)
-        self.cfg = cfg
-        
-        box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-        box_v.set_homogeneous(False)
-        box_v.set_property("expand", True)
-        box_v.set_property("halign", Gtk.Align.CENTER)
-        
-        label = Gtk.Label()
-        label.set_markup(f'<b>Comando</b>')
-        #label.set_justify(Gtk.Justification.CENTER)
-        label.set_line_wrap(True)
-        box_v.pack_start(label, True, True, 0)
-        
-        label = Gtk.Label()
-        label.set_markup(f'<i>{self.cfg}</i>')
-        #label.set_justify(Gtk.Justification.LEFT)
-        label.set_line_wrap(True)
-        label.set_selectable(True)
-        box_v.pack_start(label, True, True, 0)
-        
-        button = Gtk.Button(label=txt)
-        button.connect('clicked', self.evt_command_run)
-        box_v.pack_end(button, False, False, 0)
-        
-        #box_main = self.get_content_area()
-        #box_main.add(box_v)
-        self.get_content_area().add(box_v)
-        self.show_all()
-        
-    def evt_command_run(self, widget):
-        Util.Command_Run(self.cfg)
-        self.destroy()
-
-
 class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
-    def __init__(self, parent, opc='CompressVideos'):
+    def __init__(self, parent, opc='VideoCompress'):
         self.cfg = ''
         self.opc = opc
     
@@ -112,6 +37,10 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
         self.set_default_size(352, 0)
         
         box_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        # Para acomodar la box/caja
+        box_data.set_homogeneous(False)
+        box_data.set_property("expand", True)
+        box_data.set_property("halign", Gtk.Align.CENTER)
         
         label_title = Gtk.Label()
         label_title.set_markup(f'<big><b>{self.txt_title}</b></big>\n')
@@ -257,7 +186,7 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
             if self.opc == 'VideoRecord':
                 recordmode_txt = 'MODO Grabar solo Audio'
             elif self.opc == 'AudioRecord':
-                recordmode_txt = 'MODO Grabar Video'
+                recordmode_txt = 'MODO Grabar solo Video'
             recordmode_btn = Gtk.Button(label=recordmode_txt)
             recordmode_btn.connect('clicked', self.evt_recordmode)
             box_data.pack_start(recordmode_btn, True, True, 0)
@@ -293,7 +222,7 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
                     cmd = 'pactl list short sources'
                 elif sys == 'win':
                     cmd = 'ffmpeg -list_devices true -f dshow -i dummy'
-                dialog = Dialog_TextView(
+                dialog = Util_Gtk.Dialog_TextView(
                              self,
                              text=(
                                  'Para ver los dispositivos de audio.\n'
@@ -386,7 +315,8 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
                 if self.fps_CheckButton.get_active() == False:
                     fps = FFmpeg.FPS(10)
                 self.cfg = (
-                    f'ffmpeg -f x11grab -i :0 {audio} {crf} {preset} {fps} '
+                    f'ffmpeg {FFmpeg.Desktop_Render()} '
+                    f'{audio} {crf} {preset} {fps} '
                     f'{rez_HxV} "{self.pth}.mkv"'
                 )
                 txt=''
@@ -398,7 +328,7 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
             )
             
             # Ejecutar comando
-            dialog = Dialog_Command_Run(self, cfg=self.cfg, txt=self.txt_title)
+            dialog = Util_Gtk.Dialog_Command_Run(self, cfg=self.cfg, txt=self.txt_title)
             rsp = dialog.run()
             dialog.destroy()
             
@@ -518,7 +448,7 @@ class Window_Main(Gtk.Window):
             text = Util.Text_Read(cfg_file, 'ModeText')
         else: 
             text = f'No existe el archivo de texto "{cfg_file}"'
-        dialog = Dialog_TextView(self, text=text)
+        dialog = Util_Gtk.Dialog_TextView(self, text=text)
         response = dialog.run()
         dialog.destroy()
         print('Abrir archivo de texto')
