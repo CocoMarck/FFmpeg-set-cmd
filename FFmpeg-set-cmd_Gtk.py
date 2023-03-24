@@ -328,13 +328,11 @@ class Dialog_FFmpeg_VideoAudio(Gtk.Dialog):
             )
             
             # Ejecutar comando
-            dialog = Util_Gtk.Dialog_Command_Run(self, cfg=self.cfg, txt=self.txt_title)
-            rsp = dialog.run()
+            dialog = Util_Gtk.Dialog_Command_Run(
+                self, cfg=self.cfg, txt=self.txt_title, cfg_file=cfg_file
+            )
+            dialog.run()
             dialog.destroy()
-            
-            # Agragar comando a la configuración
-            with open(cfg_file, 'a') as file_cfg:
-                file_cfg.write(self.cfg + f'\n#{Util.Separator(see=False)}\n')
             #dialog = Gtk.MessageDialog(
             #    transient_for=self,
             #    flags=0,
