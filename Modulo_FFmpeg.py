@@ -133,6 +133,19 @@ def Preset(preset='medium'):
     ):
         preset = f'-preset {preset}'
 
+    if preset == 'list':
+        preset = [
+            '-preset ultrafast',
+            '-preset superfast',
+            '-preset veryfast',
+            '-preset faster',
+            '-preset fast',
+            '-preset medium',
+            '-preset slow',
+            '-preset slower',
+            '-preset veryslow'
+        ]
+
     else:
         preset = '-preset medium'
         print(f'Debido a los datos erroneos el presen sera "{preset}"')
