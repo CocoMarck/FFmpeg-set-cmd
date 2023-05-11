@@ -55,16 +55,22 @@ def Open_Archive():
     return arch_name
     
 def Message_Audio():
-    audio_cmd = subprocess.check_output(
-        FFmpeg.Command('Audio'), shell=True, text=True
-    )
+    if system == 'linux':
+        audio_cmd = subprocess.check_output(
+            FFmpeg.Command('Audio'), shell=True, text=True
+        )
+        text_add = (
+            f'<b>{FFmpeg.Message("Audio")}</b> <br>'
+            f'<small><i>{audio_cmd}</i></small>'
+        )
+    elif system == 'win':
+        text_add = 'Ejecuta ese comando en terminal.'
+    else:
+        pass
     text = (
         # <br> = salto de linea
         '<b>Comando para ver dispositivos de audio:</b> <br>'
-        f'"{FFmpeg.Command("Audio")}" <br><br>'
-        
-        f'<b>{FFmpeg.Message("Audio")}</b> <br>'
-        f'<small><i>{audio_cmd}</i></small>'
+        f'"{FFmpeg.Command("Audio")}" <br><br>{text_add}'
     )
     return text
 
@@ -82,7 +88,7 @@ class Window_Menu(QWidget):
         self.setLayout(layout)
         
         # Secciones verticales - Botones
-        button_configVideo = QPushButton('Configurar Videos', self)
+        button_configVideo = QPushButton('Configurar Video', self)
         button_configVideo.clicked.connect(self.evt_configVideo)
         layout.addWidget(button_configVideo)
         
