@@ -20,7 +20,7 @@ class Dialog_TextEdit(QDialog):
         self.setLayout(vbox_main)
         
         # Seccion Vertical 1 - Text Edit
-        text_edit = QTextEdit(str(text))
+        text_edit = QTextEdit(str(text).replace('\n', '<br>'))
         text_edit.setReadOnly(True)
         vbox_main.addWidget(text_edit)
         

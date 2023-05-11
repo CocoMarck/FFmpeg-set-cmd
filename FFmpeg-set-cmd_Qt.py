@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import(
     QApplication,
     QWidget,
     QDialog,
+    QMessageBox,
     QFileDialog,
     QLabel,
     QPushButton,
@@ -28,6 +29,41 @@ system = Util.System()
 cfg_file = 'FFmpeg_cfg.txt'
 
 
+def Command_Run(cmd = ''):
+    dialog = Util_Qt.Dialog_Command_Run(
+        cmd = cmd,
+        cfg_file = cfg_file
+    )
+    dialog.exec()
+    
+def Open_Archive():
+    arch_name, ok = QFileDialog.getOpenFileName(
+        None,
+        'Seleccionar un Video o Audio',
+        Util.Path(),
+        'Videos o Audios (*.mp3 *.ogg *.wav *.mp4 *.mkv *.webm *.avi)'
+    )
+    if arch_name:
+        arch_name = str(Path(arch_name))
+    else:
+        arch_name = ''
+    return arch_name
+    
+def Message_Audio():
+    audio_cmd = subprocess.check_output(
+        FFmpeg.Command('Audio'), shell=True, text=True
+    )
+    text = (
+        # <br> = salto de linea
+        '<b>Comando para ver dispositivos de audio:</b> <br>'
+        f'"{FFmpeg.Command("Audio")}" <br><br>'
+        
+        f'<b>{FFmpeg.Message("Audio")}</b> <br>'
+        f'<small><i>{audio_cmd}</i></small>'
+    )
+    return text
+
+
 class Window_Menu(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,9 +77,9 @@ class Window_Menu(QWidget):
         self.setLayout(layout)
         
         # Secciones verticales - Botones
-        button_compress = QPushButton('Configurar Videos', self)
-        button_compress.clicked.connect(self.evt_compress)
-        layout.addWidget(button_compress)
+        button_configVideo = QPushButton('Configurar Videos', self)
+        button_configVideo.clicked.connect(self.evt_configVideo)
+        layout.addWidget(button_configVideo)
         
         button_record = QPushButton('Grabar', self)
         button_record.clicked.connect(self.evt_record)
@@ -53,15 +89,15 @@ class Window_Menu(QWidget):
         button_reproduce.clicked.connect(self.evt_reproduce)
         layout.addWidget(button_reproduce)
         
+        button_help = QPushButton('Ayuda', self)
+        button_help.clicked.connect(self.evt_help)
+        layout.addWidget(button_help)
+        
         button_view_cfg = QPushButton('Ver comandos creados', self)
         button_view_cfg.clicked.connect(self.evt_view_cfg)
         layout.addWidget(button_view_cfg)
         
         layout.addStretch()
-        
-        button_help = QPushButton('Ayuda', self)
-        button_help.clicked.connect(self.evt_help)
-        layout.addWidget(button_help)
         
         button_exit = QPushButton('Salir', self)
         button_exit.clicked.connect(self.evt_exit)
@@ -70,7 +106,7 @@ class Window_Menu(QWidget):
         # Mostrar ventana
         self.show()
         
-    def evt_compress(self):
+    def evt_configVideo(self):
         dialog = Dialog_VideoAudio(opc='VideoConfig')
         #dialog.setGeometry( # Para iniciar en el medio de la ventana
         #    self.geometry().center().x() - 100, 
@@ -87,11 +123,9 @@ class Window_Menu(QWidget):
         dialog.exec()
         
     def evt_help(self):
-        dialog = Util_Qt.Dialog_Command_Run(
-            cmd='ffmpeg -h',
-            cfg_file=cfg_file
+        Command_Run(
+            cmd='ffmpeg -h'
         )
-        dialog.exec()
     
     def evt_view_cfg(self):
         if Path(cfg_file).exists():
@@ -127,11 +161,14 @@ class Dialog_VideoAudio(QDialog):
         self.setLayout(vbox_main)
         
         # Seccion Vertical - Elegir Video
-        button_set_video = QPushButton('Seleccionar - Video/Audio')
+        button_set_video = QPushButton('Establecer - Video/Audio')
         if opc == 'VideoConfig':
-            button_set_video.clicked.connect(self.evt_set_VideoArchive)
-        elif opc == 'VideoRecord':
-            button_set_video.clicked.connect(self.evt_set_VideoSave)
+            button_set_video.clicked.connect(self.evt_set_VideoAudioArchive)
+        elif (
+            opc == 'VideoRecord' or
+            opc == 'AudioRecord' 
+        ):
+            button_set_video.clicked.connect(self.evt_set_VideoAudioSave)
         else: 
             pass
         vbox_main.addWidget(button_set_video)
@@ -141,8 +178,9 @@ class Dialog_VideoAudio(QDialog):
         self.label_set_video.setWordWrap(True)
         vbox_main.addWidget(self.label_set_video)
         
-        self.path_video = ''
+        self.path = ''
         self.evt_path()
+        self.opc = opc
         
         vbox_main.addStretch()
         
@@ -220,6 +258,7 @@ class Dialog_VideoAudio(QDialog):
             self.combobox_preset = QComboBox(self)
             for preset in FFmpeg.Preset('list'):
                 self.combobox_preset.addItem(preset)
+            self.combobox_preset.setCurrentIndex(5) # Preset Medium
             hbox.addWidget(self.combobox_preset)
         else:
             pass
@@ -234,6 +273,7 @@ class Dialog_VideoAudio(QDialog):
             vbox_main.addLayout(hbox)
             
             self.checkbox_audio = QCheckBox('Audio:')
+            self.checkbox_audio.stateChanged.connect(self.evt_audio)
             hbox.addWidget(self.checkbox_audio)
             
             self.entry_audio = QLineEdit(
@@ -249,7 +289,6 @@ class Dialog_VideoAudio(QDialog):
             button_recordmode = QPushButton('NoText')
             button_recordmode.clicked.connect(self.evt_recordmode)
             vbox_main.addWidget(button_recordmode)
-            self.opc = opc
             
             # Seccion de if para Audio y Boton recordmode
             if opc == 'VideoRecord':
@@ -266,47 +305,42 @@ class Dialog_VideoAudio(QDialog):
         # Seccion Vertical - Boton Agregar Configuracion
         vbox_main.addStretch()
         
-        button_add_cfg = QPushButton(f'Empezar - {opc}')
-        button_add_cfg.clicked.connect(self.evt_add_cfg)
-        vbox_main.addWidget(button_add_cfg)
+        button_add_cmd = QPushButton(f'Empezar - {opc}')
+        button_add_cmd.clicked.connect(self.evt_add_cmd)
+        vbox_main.addWidget(button_add_cmd)
         
-    def evt_set_VideoArchive(self):
-        video_name, ok = QFileDialog.getOpenFileName(
-            self,
-            'Seleccionar un Video',
-            '', # Ruta
-            'Videos (*.mkv *.mp4 *.mov *webm)'
-        )
-        if video_name:
-            self.path_video = str(Path(video_name))
-        else:
-            self.path_video = ''
-        self.evt_path()
-        
-    def evt_set_VideoSave(self):
-        video_name, _ = QFileDialog.getSaveFileName(
-            self,
-            'Guardar Archivo', 
-            '', # Ruta
-            'Videos(*.mkv *.mp4 *.mov *webm);;Todo(*)'
-        )
-        if video_name:
-            self.path_video = f'{str(Path(video_name))}.mkv'
-        else:
-            self.path_video = ''
-        self.evt_path()
-
     def evt_path(self):
-        if self.path_video == '':
+        if self.path == '':
             self.label_set_video.setText(
                 '<small><b>'
-                'VIDEO SIN SELECCIONAR'
+                'VIDEO SIN ESTABLECER'
                 '</b></small>'
             )
         else:
             self.label_set_video.setText(
-                '<small>Video seleccionado</small>'
+                '<small>Video establecido</small>'
             )
+        
+    def evt_set_VideoAudioArchive(self):
+        arch_name = Open_Archive()
+        if arch_name == '':
+            self.path = ''
+        else:
+            self.path = arch_name
+        self.evt_path()
+        
+    def evt_set_VideoAudioSave(self):
+        video_name, _ = QFileDialog.getSaveFileName(
+            self,
+            'Guardar Archivo', 
+            Util.Path(), # Ruta
+            'Videos(*.mkv *.mp4 *.mov *webm);;Todo(*)'
+        )
+        if video_name:
+            self.path = str(Path(video_name))
+        else:
+            self.path = ''
+        self.evt_path()
         
     def evt_recordmode(self):
         self.close()
@@ -318,9 +352,98 @@ class Dialog_VideoAudio(QDialog):
             dialog.exec()
         else:
             pass
+            
+    def evt_audio(self, value):
+        if Qt.CheckState(value) == Qt.CheckState.Checked:
+            dialog = Util_Qt.Dialog_TextEdit(
+                text=Message_Audio()
+            )
+            dialog.exec()
+        else:
+            pass
         
-    def evt_add_cfg(self):
-        pass
+    def evt_add_cmd(self):
+        # Video Zona
+        crf, fps, rez_HxV, preset = '', '', '', ''
+        if (
+            self.opc == 'VideoConfig' or
+            self.opc == 'VideoRecord'
+        ):
+            if self.checkbox_crf.checkState() == Qt.CheckState.Checked:
+                crf = FFmpeg.CRF(self.spinbox_crf.value())
+            else:
+                pass
+                
+            if self.checkbox_fps.checkState() == Qt.CheckState.Checked:
+                fps = FFmpeg.FPS(self.spinbox_fps.value())
+            else:
+                pass
+                
+            if self.checkbox_rez.checkState() == Qt.CheckState.Checked:
+                rez_HxV = FFmpeg.Resolution(
+                    rez_H=self.entry_rezH.text(),
+                    rez_V=self.entry_rezV.text()
+                )
+            else:
+                pass
+                
+            if self.opc == 'VideoRecord':
+                if self.checkbox_preset.checkState() == Qt.CheckState.Checked:
+                    preset = self.combobox_preset.currentText()
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
+        
+        # Audio Zona
+        audio = ''
+        if (
+            self.opc == 'VideoRecord' or
+            self.opc == 'AudioRecord'
+        ):
+            if self.checkbox_audio.checkState() == Qt.CheckState.Checked:
+                audio = FFmpeg.Audio(self.entry_audio.text())
+            else:
+                if self.opc == 'AudioRecord':
+                    audio = FFmpeg.Audio()
+                else:
+                    audio = ''
+        else:
+            pass
+            
+        # Ejecutar comando y path Zona
+        if self.path == '':
+            QMessageBox.information(
+                self,
+                'Sin Video/Audio', # Titulo
+                
+                '<b>No se a establecido el Video/Audio</b><br>' # Info prinicpal
+                'Establesca el Video/Audio para continuar.'
+            )
+        else:
+            if self.opc == 'VideoConfig':
+                cmd = (
+                    f'ffmpeg -i "{self.path}" {crf} {fps} {rez_HxV} '
+                    f'"{self.path}_Comprimido.mkv"'
+                )
+            elif self.opc == 'VideoRecord':
+                if self.checkbox_fps.checkState == Qt.CheckState.Checked:
+                    fps = FFmpeg.FPS(10)
+                else:
+                    pass
+                cmd = (
+                    f'ffmpeg {FFmpeg.Desktop_Render()} '
+                    f'{audio} {crf} {preset} {fps} '
+                    f'{rez_HxV} "{self.path}.mkv"'
+                )
+            elif self.opc == 'AudioRecord':
+                cmd = f'ffmpeg {audio} "{self.path}.ogg"'
+            else:
+                cmd = ''
+                
+            Command_Run(cmd=cmd)
 
 
 class Dialog_Reproduce(QDialog):
@@ -364,16 +487,7 @@ class Dialog_Reproduce(QDialog):
         
         # Seccion vertical 1
         label_dispAudio = QLabel('', self)
-        audio_cmd = subprocess.check_output(
-            FFmpeg.Command('Audio'), shell=True, text=True
-        )
-        label_dispAudio.setText(
-            '<b>Comando para ver dispositivos de audio:</b> <br>'
-            f'"{FFmpeg.Command("Audio")}" <br><br>' # <br> = salto de linea
-            
-            f'<b>{FFmpeg.Message("Audio")}</b> <br>'
-            f'<small><i>{audio_cmd}</i></small>'
-        )
+        label_dispAudio.setText(Message_Audio())
         label_dispAudio.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse | 
             Qt.TextInteractionFlag.TextSelectableByKeyboard
@@ -403,10 +517,21 @@ class Dialog_Reproduce(QDialog):
         vbox.addWidget(button_dispAudio)
         
     def evt_reproduce_VideoAudio(self):
-        pass
+        arch_name = Open_Archive()
+        if arch_name == '':
+            pass
+        else:
+            Command_Run(
+                cmd=f'ffplay -i "{arch_name}"'
+            )
 
     def evt_reproduce_dispAudio(self):
-        pass
+        if self.entry_dispAudio.text() == '':
+            pass
+        else:
+            Command_Run(
+                cmd=f'ffplay {FFmpeg.Audio(self.entry_dispAudio.text())}'
+            )
 
 
 if __name__ == '__main__':
