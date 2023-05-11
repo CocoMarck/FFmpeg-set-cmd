@@ -27,6 +27,11 @@ import Modulo_Util_Qt as Util_Qt
 
 system = Util.System()
 cfg_file = 'FFmpeg_cfg.txt'
+arch_typeVideoAudio = (
+    'Videos o Audios'
+    '(*.mp3 *.ogg *.wav '
+    '*.mp4 *.mkv *.webm *.avi *mov *vob *wmv)'
+)
 
 
 def Command_Run(cmd = ''):
@@ -41,7 +46,7 @@ def Open_Archive():
         None,
         'Seleccionar un Video o Audio',
         Util.Path(),
-        'Videos o Audios (*.mp3 *.ogg *.wav *.mp4 *.mkv *.webm *.avi)'
+        arch_typeVideoAudio
     )
     if arch_name:
         arch_name = str(Path(arch_name))
@@ -334,7 +339,7 @@ class Dialog_VideoAudio(QDialog):
             self,
             'Guardar Archivo', 
             Util.Path(), # Ruta
-            'Videos(*.mkv *.mp4 *.mov *webm);;Todo(*)'
+            arch_typeVideoAudio
         )
         if video_name:
             self.path = str(Path(video_name))
@@ -487,7 +492,7 @@ class Dialog_Reproduce(QDialog):
         
         # Seccion vertical 1
         label_dispAudio = QLabel('', self)
-        label_dispAudio.setText(Message_Audio())
+        label_dispAudio.setText(Message_Audio().replace('\n', '<br>'))
         label_dispAudio.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse | 
             Qt.TextInteractionFlag.TextSelectableByKeyboard
