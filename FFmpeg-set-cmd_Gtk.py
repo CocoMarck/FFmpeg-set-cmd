@@ -109,9 +109,9 @@ class Window_Menu(Gtk.Window):
         box_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
         # Secciones Verticales - Botones
-        btn_ffmpeg_compress = Gtk.Button(label='Comprimir videos')
-        btn_ffmpeg_compress.connect("clicked", self.evt_ffmpeg_compress)
-        box_v.pack_start(btn_ffmpeg_compress, True, True, 0)
+        btn_ffmpeg_config = Gtk.Button(label='Configurar video')
+        btn_ffmpeg_config.connect("clicked", self.evt_ffmpeg_config)
+        box_v.pack_start(btn_ffmpeg_config, True, True, 0)
         
         btn_ffmpeg_record = Gtk.Button(label='Grabar')
         btn_ffmpeg_record.connect("clicked", self.evt_ffmpeg_record)
@@ -136,8 +136,8 @@ class Window_Menu(Gtk.Window):
         # Fin, para agregar el contenedor principal
         self.add(box_v)
         
-    def evt_ffmpeg_compress(self, widget):
-        dialog = Dialog_VideoAudio(self, opc='VideoCompress')
+    def evt_ffmpeg_config(self, widget):
+        dialog = Dialog_VideoAudio(self, opc='VideoConfig')
         response = dialog.run()
         dialog.destroy()
         
@@ -168,7 +168,7 @@ class Window_Menu(Gtk.Window):
 
 
 class Dialog_VideoAudio(Gtk.Dialog):
-    def __init__(self, parent, opc='VideoCompress'):
+    def __init__(self, parent, opc='VideoConfig'):
         super().__init__(title=f'FFmpeg - {opc}', transient_for=parent, flags=0)
         self.set_default_size(512, -1)
         
@@ -191,10 +191,10 @@ class Dialog_VideoAudio(Gtk.Dialog):
         self.label_set_path.set_markup('<b>VIDEO SIN ESTABLECER</b>')
         box_data.pack_start(self.label_set_path, True, True, 0)
 
-        # Secciones Verticales unicamente en Video Record y VideoCompress
+        # Secciones Verticales unicamente en Video Record y VideoConfig
         if (
             self.opc == 'VideoRecord' or
-            self.opc == 'VideoCompress'
+            self.opc == 'VideoConfig'
         ):
             # Seccion Vrtical - CRF
             crf_box = Gtk.Box(spacing=4)
@@ -334,7 +334,7 @@ class Dialog_VideoAudio(Gtk.Dialog):
         ):
             dialog = Save_Archive(self)
             
-        elif self.opc == 'VideoCompress':    
+        elif self.opc == 'VideoConfig':    
             dialog = Open_Archive(self)
             
         if dialog == '':
@@ -378,7 +378,7 @@ class Dialog_VideoAudio(Gtk.Dialog):
         
         crf, fps, rez_HxV = '', '', ''
         if (
-            self.opc == 'VideoCompress' or
+            self.opc == 'VideoConfig' or
             self.opc == 'VideoRecord'
         ):
             if self.crf_CheckButton.get_active() == True:
@@ -436,7 +436,7 @@ class Dialog_VideoAudio(Gtk.Dialog):
             dialog.destroy()
             
         else:
-            if self.opc == 'VideoCompress':
+            if self.opc == 'VideoConfig':
                 self.cfg = (
                     f'ffmpeg -i "{self.pth}" {crf} {fps} {rez_HxV} '
                     f'"{self.pth}_Comprimido.mkv"'
@@ -475,7 +475,7 @@ class Dialog_Reproduce(Gtk.Dialog):
         page_archive = Gtk.Box() # Pestaña
         page_archive.set_border_width(8) # Poner margen en la pestaña
         notebook.append_page(
-            page_archive, Gtk.Label(label='Reproducir Archivo - Audio/Video')
+            page_archive, Gtk.Label(label='Reproducir - Video/Audio')
         )
         
         button_archive = Gtk.Button(label='Seleccionar archivo')

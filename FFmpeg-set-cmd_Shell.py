@@ -13,7 +13,7 @@ def Menu_FFmpeg():
         Util.CleanScreen()
         opc = input(
             Util.Title(txt='Opciones', see=False) +
-            '1. Comprimir videos\n'
+            '1. Configurar video\n'
             '2. Grabar\n'
             '3. Reproducir\n'
             '9. Ver comandos creados\n'
@@ -25,7 +25,7 @@ def Menu_FFmpeg():
         cfg_save = False
         Util.CleanScreen()
         if opc == '1':
-            cfg = Compress_Video()
+            cfg = Config_Video()
             cfg_save = True
         
         elif opc == '2':
@@ -77,14 +77,14 @@ def Menu_FFmpeg():
             pass
             
             
-def Compress_Video():
+def Config_Video():
     # ffmpeg -i '/Ruta/VideoEntrada.mkv' -cfg 0/50 -r 0 '/Ruta/VideoSalida.mkv'
     
     path = Util.Archive_Path()
     
     opc = Util.Continue(
         Util.Title('CRF Calidad', see=False) +
-        '¿Comprimir Video (crf)?'
+        '¿Cambiar calidad de Video (crf)?'
     )
     if opc == 's':
         Util.Title('CRF Calidad')
@@ -125,7 +125,7 @@ def Compress_Video():
     else:
         fps = ''
         
-    opc = Util.Continue('¿Comprimir Video?')
+    opc = Util.Continue('¿Configurar video?')
     if opc == 's':    
         cfg = (
             f'ffmpeg -i "{path}" {crf} {rez} {fps} "{path}_Comprimido.mkv"'
