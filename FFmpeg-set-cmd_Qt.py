@@ -13,9 +13,7 @@ from PyQt6.QtWidgets import(
     QComboBox,
     QTabWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QFormLayout,
-    QGridLayout
+    QHBoxLayout
 )
 from PyQt6.QtCore import Qt
 from pathlib import Path
@@ -30,7 +28,8 @@ cfg_file = 'FFmpeg_cfg.txt'
 arch_typeVideoAudio = (
     'Videos o Audios'
     '(*.mp3 *.ogg *.wav '
-    '*.mp4 *.mkv *.webm *.avi *mov *vob *wmv)'
+    '*.mp4 *.mkv *.webm *.avi *mov *vob *wmv);;'
+    'Todo(*)'
 )
 
 
@@ -324,12 +323,12 @@ class Dialog_VideoAudio(QDialog):
         if self.path == '':
             self.label_set_video.setText(
                 '<small><b>'
-                'VIDEO SIN ESTABLECER'
+                'VIDEO/AUDIO SIN ESTABLECER'
                 '</b></small>'
             )
         else:
             self.label_set_video.setText(
-                '<small>Video establecido</small>'
+                '<small>Video/Audio establecido</small>'
             )
         
     def evt_set_VideoAudioArchive(self):
