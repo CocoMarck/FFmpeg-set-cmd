@@ -27,8 +27,8 @@ system = Util.System()
 cfg_file = 'FFmpeg_cfg.txt'
 arch_typeVideoAudio = (
     'Videos o Audios'
-    '(*.mp3 *.ogg *.wav '
-    '*.mp4 *.mkv *.webm *.avi *mov *vob *wmv);;'
+    '(*.mkv *.mp4 *.webm *.avi *mov *vob *wmv ' # Video
+    '*.mp3 *.ogg *.wav);;' # Audio
     'Todo(*)'
 )
 
