@@ -439,7 +439,7 @@ class Dialog_VideoAudio(Gtk.Dialog):
             if self.opc == 'VideoConfig':
                 self.cfg = (
                     f'ffmpeg -i "{self.pth}" {crf} {fps} {rez_HxV} '
-                    f'"{self.pth}_Comprimido.mkv"'
+                    f'"{self.pth}_Config.mkv"'
                 )
             elif self.opc == 'VideoRecord':
                 if self.fps_CheckButton.get_active() == False:

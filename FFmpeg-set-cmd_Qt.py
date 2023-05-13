@@ -134,7 +134,7 @@ class Window_Menu(QWidget):
         
     def evt_help(self):
         Command_Run(
-            cmd='ffmpeg -h'
+            cmd=FFmpeg.Command('Help')
         )
     
     def evt_view_cfg(self):
@@ -436,7 +436,7 @@ class Dialog_VideoAudio(QDialog):
             if self.opc == 'VideoConfig':
                 cmd = (
                     f'ffmpeg -i "{self.path}" {crf} {fps} {rez_HxV} '
-                    f'"{self.path}_Comprimido.mkv"'
+                    f'"{self.path}_Config.mkv"'
                 )
             elif self.opc == 'VideoRecord':
                 if self.checkbox_fps.checkState == Qt.CheckState.Checked:

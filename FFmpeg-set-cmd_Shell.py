@@ -16,6 +16,7 @@ def Menu_FFmpeg():
             '1. Configurar video\n'
             '2. Grabar\n'
             '3. Reproducir\n'
+            '4. Ayuda\n'
             '9. Ver comandos creados\n'
             '0. Salir\n\n'
             
@@ -34,6 +35,10 @@ def Menu_FFmpeg():
         
         elif opc == '3':
             cfg = Reproduce()
+            cfg_save = True
+            
+        elif opc == '4':
+            cfg = FFmpeg.Command('Help')
             cfg_save = True
             
         elif opc == '9':
@@ -128,7 +133,7 @@ def Config_Video():
     opc = Util.Continue('¿Configurar video?')
     if opc == 's':    
         cfg = (
-            f'ffmpeg -i "{path}" {crf} {rez} {fps} "{path}_Comprimido.mkv"'
+            f'ffmpeg -i "{path}" {crf} {rez} {fps} "{path}_Config.mkv"'
         )
     
     else:
