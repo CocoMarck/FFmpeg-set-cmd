@@ -1,5 +1,6 @@
 import locale
 import Modulo_Util as Util
+from pathlib import Path as pathlib
 
 
 def Default_Language():
@@ -18,8 +19,8 @@ def Language( lang=Default_Language() ):
     # Leer Archivo languages
     file_text = Util.Ignore_Comment(
         Util.Text_Read(
-            file_and_path='./Languages.dat',
-            opc='ModeRead'
+            file_and_path='./Language_en.dat',
+            opc='ModeText'
         )
     )
     # Obtener str de languages
@@ -30,85 +31,123 @@ def Language( lang=Default_Language() ):
     
     # Verificar un language establecido por el archivo - usuario
     if file_dict['set_lang'] == '':
-        # Si no hay str, entonces se coloca el default
+        # Si no hay str, entonces se coloca el dafault
         pass
 
-    elif (
-        file_dict['set_lang'] == 'es' or
-        file_dict['set_lang'] == 'en'
-    ):
-        # Si el str es correcto, establece en la app
+    elif pathlib(
+        f'./Language_{file_dict["set_lang"]}.dat'
+    ).exists():
+        # Si el existe el archivo de lenguaje
         lang = file_dict['set_lang']
 
     else:
-        # Si es incorrecto, entonces se coloca el dafault
+        # Si es incorrecto, entonces se coloca el default
         pass
 
     # Verificar que el lang sea español o english
-    if (
-        lang == 'es' or
-        lang == 'en'
-    ):
+    if pathlib(
+        f'./Language_{lang}.dat'
+    ).exists():
+        # Si existe el lenguage, entonces se sigue
         pass
     else:
-        # Si no es español o english, entonces sera enlgish.
+        # Si no es existe el lenguaje, entonces sera english.
         #print(lang)
         lang = 'en'
     
     # Agregar str de languages a un dicionario
     if (
-        lang == 'es' or
-        lang == 'en'
+        pathlib(f'./Language_{lang}.dat').exists()
     ):
-        # Formato, es_opcion - en_opcion
-        lang=f'{lang}_'
-        
+        # Leer Archivo languages - y eliminar comentarios
+        file_text = Util.Ignore_Comment(
+            Util.Text_Read(
+                file_and_path=f'./Language_{lang}.dat',
+                opc='ModeText'
+            )
+        )
+        file_text = Util.Ignore_Comment(
+            text=file_text,
+            comment='set_lang='
+        )
+
+        # Diccionario - Obtener str de languages
+        file_dict = Util.Text_Separe(
+            text=file_text,
+            text_separe='='
+        )
+    
         # Declarar variables, tipo lista, si es necesario
         list_YesNo = []
-        for option in (file_dict[f'{lang}YesNo']).split(','):
+        for option in (file_dict['YesNo']).split(','):
             list_YesNo.append(option)
 
         # Agregar al diccionario
         lang_dict = {
             # Opciones
-            'option': file_dict[f'{lang}option'],
-            'exit': file_dict[f'{lang}exit'],
-            'continue': file_dict[f'{lang}continue'],
-            'continue_enter': file_dict[f'{lang}continue_enter'],
-            'install': file_dict[f'{lang}install'],
-            'select': file_dict[f'{lang}select'],
+            'option': file_dict[f'option'],
+            'exit': file_dict[f'exit'],
+            'continue': file_dict['continue'],
+            'continue_enter': file_dict['continue_enter'],
+            'install': file_dict['install'],
+            'select': file_dict['select'],
             'YesNo': list_YesNo,
-            'more_info': file_dict[f'{lang}more_info'],
-            'set_dir': file_dict[f'{lang}set_dir'],
+            'more_info': file_dict['more_info'],
+            'set_dir': file_dict['set_dir'],
+            'view_cfg': file_dict['view_cfg'],
+            'start': file_dict['start'],
+            'rec_video': file_dict['rec_video'],
+            'rec_audio': file_dict['rec_audio'],
+            'mode': file_dict['mode'],
+            'set_option': file_dict['set_option'],
+            'save_arch': file_dict['save_arch'],
             
             # Finalizando - Completando
-            'finalized': file_dict[f'{lang}finalized'],
-            'bye': file_dict[f'{lang}bye'],
-            'fin_install': file_dict[f'{lang}fin_install'],
+            'finalized': file_dict['finalized'],
+            'bye': file_dict['bye'],
+            'fin_install': file_dict['fin_install'],
             
             # Errores
-            'error_admin': file_dict[f'{lang}error_admin'],
-            'error_dir': file_dict[f'{lang}error_dir'],
-            'error_parameter': file_dict[f'{lang}error_parameter'],
+            'error_admin': file_dict['error_admin'],
+            'error_dir': file_dict['error_dir'],
+            'error_parameter': file_dict['error_parameter'],
             
             # Ayuda
-            'help_wait': file_dict[f'{lang}help_wait'],
+            'help_wait': file_dict['help_wait'],
+            'help': file_dict['help'],
             
             # Solo texto
-            'app': file_dict[f'{lang}app'],
-            'title': file_dict[f'{lang}title'],
-            'lang': file_dict[f'{lang}lang'],
-            'dir': file_dict[f'{lang}dir'],
-            'ver': file_dict[f'{lang}ver'],
-            'name': file_dict[f'{lang}name'],
-            'exec': file_dict[f'{lang}exec'],
-            'icon': file_dict[f'{lang}icon'],
-            'comment': file_dict[f'{lang}comment'],
-            'terminal': file_dict[f'{lang}terminal'],
-            'categories': file_dict[f'{lang}categories'],
-            'wait': file_dict[f'{lang}wait'],
-            'text': file_dict[f'{lang}text'],
-            'cmd': file_dict[f'{lang}cmd']
+            'app': file_dict['app'],
+            'title': file_dict['title'],
+            'lang': file_dict['lang'],
+            'dir': file_dict['dir'],
+            'ver': file_dict['ver'],
+            'name': file_dict['name'],
+            'exec': file_dict['exec'],
+            'icon': file_dict['icon'],
+            'comment': file_dict['comment'],
+            'terminal': file_dict['terminal'],
+            'categories': file_dict['categories'],
+            'wait': file_dict['wait'],
+            'text': file_dict['text'],
+            'cmd': file_dict['cmd'],
+            'cfg': file_dict['cfg'],
+            'record': file_dict['record'],
+            'reproduce': file_dict['reproduce'],
+            'set': file_dict['set'],
+            'disp_audio': file_dict['disp_audio'],
+            'arch': file_dict['arch'],
+            'no_set': file_dict['no_set'],
+            'yes_set': file_dict['yes_set'],
+            'the_cfg_be': file_dict['the_cfg_be'],
+            'are_disp': file_dict['are_disp'],
+            'resolution': file_dict['resolution'],
+            'quality': file_dict['quality'],
+            'fps': file_dict['fps'],
+            'cpu_use': file_dict['cpu_use'],
+            'set_arch': file_dict['set_arch'],
+            'no_arch': file_dict['no_arch'],
+            'see_options': file_dict['see_options']
         }
     else:
         pass
@@ -151,7 +190,7 @@ def set_lang(set_lang='es'):
     # Archivo de Texto Languages.dat
     # Leer y verificar set_lang
     text_lang = Util.Text_Read(
-        file_and_path='./Languages.dat',
+        file_and_path='./Language_en.dat',
         opc='ModeText'
     )
 
@@ -167,5 +206,5 @@ def set_lang(set_lang='es'):
 
     # Eliminar ultimo salto de linea
     lang_ready = lang_ready[:-1]
-    with open('./Languages.dat', 'w') as text_lang:
+    with open('./Language_en.dat', 'w') as text_lang:
         text_lang.write(lang_ready)

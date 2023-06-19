@@ -10,6 +10,12 @@ def Translate(
     language_input=Default_Language(),
     language_output='pt'
 ):
+    # Si el language input es Enlgish (el default)
+    if language_input == 'en':
+        language_input = 'es'
+    else:
+        pass
+
     # Establecer dict-lang por medio del parametro
     lang = Language(language_input)
     
