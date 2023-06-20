@@ -18,9 +18,11 @@ from PyQt6.QtWidgets import(
 from PyQt6.QtCore import Qt
 from pathlib import Path
 import subprocess
-import Modulo_FFmpeg as FFmpeg
-import Modulo_Util as Util
-import Modulo_Util_Qt as Util_Qt
+
+from Interface import Modulo_Util_Qt as Util_Qt
+from Modulos import Modulo_FFmpeg as FFmpeg
+from Modulos import Modulo_Util as Util
+from Modulos.Modulo_Language import get_text as Lang
 
 
 system = Util.System()
@@ -43,7 +45,7 @@ def Command_Run(cmd = ''):
 def Open_Archive():
     arch_name, ok = QFileDialog.getOpenFileName(
         None,
-        'Seleccionar un Video o Audio',
+        f'{Lang("select")} - Video / Audio',
         Util.Path(),
         arch_typeVideoAudio
     )
@@ -68,7 +70,7 @@ def Message_Audio():
         pass
     text = (
         # <br> = salto de linea
-        '<b>Comando para ver dispositivos de audio:</b> <br>'
+        f'<b>{Lang("cmd")}:</b> <br>'
         f'"{FFmpeg.Command("Audio")}" <br><br>{text_add}'
     )
     return text
@@ -87,29 +89,29 @@ class Window_Menu(QWidget):
         self.setLayout(layout)
         
         # Secciones verticales - Botones
-        button_configVideo = QPushButton('Configurar Video', self)
+        button_configVideo = QPushButton(f'{Lang("cfg")} - Video', self)
         button_configVideo.clicked.connect(self.evt_configVideo)
         layout.addWidget(button_configVideo)
         
-        button_record = QPushButton('Grabar', self)
+        button_record = QPushButton(Lang('record'), self)
         button_record.clicked.connect(self.evt_record)
         layout.addWidget(button_record)
         
-        button_reproduce = QPushButton('Reproducir', self)
+        button_reproduce = QPushButton(Lang('reproduce'), self)
         button_reproduce.clicked.connect(self.evt_reproduce)
         layout.addWidget(button_reproduce)
         
-        button_help = QPushButton('Ayuda', self)
+        button_help = QPushButton(Lang('help'), self)
         button_help.clicked.connect(self.evt_help)
         layout.addWidget(button_help)
         
-        button_view_cfg = QPushButton('Ver comandos creados', self)
+        button_view_cfg = QPushButton(Lang('view_cfg'), self)
         button_view_cfg.clicked.connect(self.evt_view_cfg)
         layout.addWidget(button_view_cfg)
         
         layout.addStretch()
         
-        button_exit = QPushButton('Salir', self)
+        button_exit = QPushButton(Lang('exit'), self)
         button_exit.clicked.connect(self.evt_exit)
         layout.addWidget(button_exit)
         
@@ -125,11 +127,11 @@ class Window_Menu(QWidget):
         dialog.exec()
         
     def evt_record(self):
-        dialog = Dialog_VideoAudio(opc='VideoRecord')
+        dialog = Dialog_VideoAudio(parent=self, opc='VideoRecord')
         dialog.exec()
     
     def evt_reproduce(self):
-        dialog = Dialog_Reproduce()
+        dialog = Dialog_Reproduce(parent=self)
         dialog.exec()
         
     def evt_help(self):
@@ -142,7 +144,7 @@ class Window_Menu(QWidget):
             text = Util.Text_Read(cfg_file, 'ModeText')
         else:
             text = f'No existe el archivo de texto "{cfg_file}"'
-        dialog = Util_Qt.Dialog_TextEdit(text=text)
+        dialog = Util_Qt.Dialog_TextEdit(parent=self, text=text)
         dialog.exec()
     
     def evt_exit(self):
@@ -171,7 +173,7 @@ class Dialog_VideoAudio(QDialog):
         self.setLayout(vbox_main)
         
         # Seccion Vertical - Elegir Video
-        button_set_video = QPushButton('Establecer - Video/Audio')
+        button_set_video = QPushButton(f'{Lang("set")} - Video/Audio')
         if opc == 'VideoConfig':
             button_set_video.clicked.connect(self.evt_set_VideoAudioArchive)
         elif (
@@ -202,7 +204,9 @@ class Dialog_VideoAudio(QDialog):
             hbox = QHBoxLayout()
             vbox_main.addLayout(hbox)
             
-            self.checkbox_crf = QCheckBox('CRF Calidad (Rango 0-50):')
+            self.checkbox_crf = QCheckBox(
+                f'CRF {Lang("quality")} (0-50):'
+            )
             self.checkbox_crf.setChecked(True)
             hbox.addWidget(self.checkbox_crf)
             
@@ -217,7 +221,7 @@ class Dialog_VideoAudio(QDialog):
             hbox = QHBoxLayout()
             vbox_main.addLayout(hbox)
             
-            self.checkbox_fps = QCheckBox('FPS Fotogramas:')
+            self.checkbox_fps = QCheckBox(f'{Lang("fps")}:')
             self.checkbox_fps.setChecked(True)
             hbox.addWidget(self.checkbox_fps)
             
@@ -234,7 +238,7 @@ class Dialog_VideoAudio(QDialog):
             hbox = QHBoxLayout()
             vbox_main.addLayout(hbox)
             
-            self.checkbox_rez = QCheckBox('Resolucion:')
+            self.checkbox_rez = QCheckBox(f'{Lang("resolution")}:')
             self.checkbox_rez.setChecked(True)
             hbox.addWidget(self.checkbox_rez)
             
@@ -259,7 +263,7 @@ class Dialog_VideoAudio(QDialog):
             hbox = QHBoxLayout()
             vbox_main.addLayout(hbox)
             
-            self.checkbox_preset = QCheckBox('Uso de CPU:')
+            self.checkbox_preset = QCheckBox(f'{Lang("cpu_use")}:')
             self.checkbox_preset.setChecked(True)
             hbox.addWidget(self.checkbox_preset)
             
@@ -288,7 +292,7 @@ class Dialog_VideoAudio(QDialog):
             
             self.entry_audio = QLineEdit(
                 self,
-                placeholderText='Dispositivo de Audio',
+                placeholderText=Lang('disp_audio'),
                 clearButtonEnabled=True
             )
             hbox.addWidget(self.entry_audio)
@@ -303,10 +307,14 @@ class Dialog_VideoAudio(QDialog):
             # Seccion de if para Audio y Boton recordmode
             if opc == 'VideoRecord':
                 self.checkbox_audio.setChecked(False)
-                button_recordmode.setText('Modo Grabar Audio')
+                button_recordmode.setText( 
+                    f"{Lang('mode')} - {Lang('rec_audio')}" 
+                )
             elif opc == 'AudioRecord':
                 self.checkbox_audio.setChecked(True)
-                button_recordmode.setText('Modo Grabar Video')
+                button_recordmode.setText(
+                    f"{Lang('mode')} - {Lang('rec_video')}" 
+                )
             else:
                 pass
         else:
@@ -315,7 +323,7 @@ class Dialog_VideoAudio(QDialog):
         # Seccion Vertical - Boton Agregar Configuracion
         vbox_main.addStretch()
         
-        button_add_cmd = QPushButton(f'Empezar - {opc}')
+        button_add_cmd = QPushButton(f'{Lang("start")} - {opc}')
         button_add_cmd.clicked.connect(self.evt_add_cmd)
         vbox_main.addWidget(button_add_cmd)
         
@@ -323,12 +331,12 @@ class Dialog_VideoAudio(QDialog):
         if self.path == '':
             self.label_set_video.setText(
                 '<small><b>'
-                'VIDEO/AUDIO SIN ESTABLECER'
+                f'VIDEO/AUDIO { (Lang("no_set")).upper() }'
                 '</b></small>'
             )
         else:
             self.label_set_video.setText(
-                '<small>Video/Audio establecido</small>'
+                f'<small>Video/Audio {Lang("yes_set")}</small>'
             )
         
     def evt_set_VideoAudioArchive(self):
@@ -342,7 +350,7 @@ class Dialog_VideoAudio(QDialog):
     def evt_set_VideoAudioSave(self):
         video_name, _ = QFileDialog.getSaveFileName(
             self,
-            'Guardar Archivo', 
+            Lang('save_arch'), 
             Util.Path(), # Ruta
             arch_typeVideoAudio
         )
@@ -427,10 +435,10 @@ class Dialog_VideoAudio(QDialog):
         if self.path == '':
             QMessageBox.information(
                 self,
-                'Sin Video/Audio', # Titulo
+                Lang('no_arch'), # Titulo
                 
-                '<b>No se a establecido el Video/Audio</b><br>' # Info prinicpal
-                'Establesca el Video/Audio para continuar.'
+                f'<b>{Lang("set_arch")} (Video/Audio)</b><br>' # Info prinicpal
+                f'{Lang("see_options")}.'
             )
         else:
             if self.opc == 'VideoConfig':
@@ -475,13 +483,16 @@ class Dialog_Reproduce(QDialog):
         
         # Pestaña 1 - Reproducir Archivo de Video o Audio
         page_VideoAudio = QWidget(self)
-        tab.addTab(page_VideoAudio, 'Reproducir - Archivo Video/Audio')
+        tab.addTab(
+            page_VideoAudio,
+            f'{Lang("reproduce")} - {Lang("arch")} Video/Audio',
+        )
         
         vbox = QVBoxLayout()
         page_VideoAudio.setLayout(vbox)
         
         button_VideoAudio = QPushButton(
-            'Seleccionar Video o Audio', self
+            f'{Lang("reproduce")} - Video / Audio', self
         )
         button_VideoAudio.clicked.connect(self.evt_reproduce_VideoAudio)
         vbox.addWidget(button_VideoAudio)
@@ -489,7 +500,10 @@ class Dialog_Reproduce(QDialog):
         
         # Pestaña 2 - Reproducir Dispositivo de Audio
         page_dispAudio = QWidget(self)
-        tab.addTab(page_dispAudio, 'Reproducir - Dispositivo de Audio')
+        tab.addTab(
+            page_dispAudio,
+            f'{Lang("reproduce")} - {Lang("disp_audio")}'
+        )
         
         # Contenedor Principal 
         vbox = QVBoxLayout()
@@ -516,13 +530,13 @@ class Dialog_Reproduce(QDialog):
         
         self.entry_dispAudio = QLineEdit(
             self,
-            placeholderText='Dispositivo de Audio',
+            placeholderText=Lang('disp_audio'),
             clearButtonEnabled=True
         )
         hbox.addWidget(self.entry_dispAudio)
         
         # Seccion vertical 3 - Boton de disp Audio
-        button_dispAudio = QPushButton('Reproducir audio')
+        button_dispAudio = QPushButton(f'{Lang("reproduce")} audio')
         button_dispAudio.clicked.connect(self.evt_reproduce_dispAudio)
         vbox.addWidget(button_dispAudio)
         

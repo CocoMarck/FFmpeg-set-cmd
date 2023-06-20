@@ -1,6 +1,9 @@
 import locale
-import Modulo_Util as Util
+from . import Modulo_Util as Util
 from pathlib import Path as pathlib
+
+
+lang_dir = './Languages/'
 
 
 def Default_Language():
@@ -19,7 +22,7 @@ def Language( lang=Default_Language() ):
     # Leer Archivo languages
     file_text = Util.Ignore_Comment(
         Util.Text_Read(
-            file_and_path='./Language_en.dat',
+            file_and_path=f'{lang_dir}Language_en.dat',
             opc='ModeText'
         )
     )
@@ -35,7 +38,7 @@ def Language( lang=Default_Language() ):
         pass
 
     elif pathlib(
-        f'./Language_{file_dict["set_lang"]}.dat'
+        f'{lang_dir}Language_{file_dict["set_lang"]}.dat'
     ).exists():
         # Si el existe el archivo de lenguaje
         lang = file_dict['set_lang']
@@ -46,7 +49,7 @@ def Language( lang=Default_Language() ):
 
     # Verificar que el lang sea español o english
     if pathlib(
-        f'./Language_{lang}.dat'
+        f'{lang_dir}Language_{lang}.dat'
     ).exists():
         # Si existe el lenguage, entonces se sigue
         pass
@@ -57,12 +60,12 @@ def Language( lang=Default_Language() ):
     
     # Agregar str de languages a un dicionario
     if (
-        pathlib(f'./Language_{lang}.dat').exists()
+        pathlib(f'{lang_dir}Language_{lang}.dat').exists()
     ):
         # Leer Archivo languages - y eliminar comentarios
         file_text = Util.Ignore_Comment(
             Util.Text_Read(
-                file_and_path=f'./Language_{lang}.dat',
+                file_and_path=f'{lang_dir}Language_{lang}.dat',
                 opc='ModeText'
             )
         )
@@ -190,7 +193,7 @@ def set_lang(set_lang='es'):
     # Archivo de Texto Languages.dat
     # Leer y verificar set_lang
     text_lang = Util.Text_Read(
-        file_and_path='./Language_en.dat',
+        file_and_path=f'{lang_dir}Language_en.dat',
         opc='ModeText'
     )
 
@@ -206,5 +209,5 @@ def set_lang(set_lang='es'):
 
     # Eliminar ultimo salto de linea
     lang_ready = lang_ready[:-1]
-    with open('./Language_en.dat', 'w') as text_lang:
+    with open(f'{lang_dir}Language_en.dat', 'w') as text_lang:
         text_lang.write(lang_ready)

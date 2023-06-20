@@ -1,12 +1,14 @@
-import Modulo_Util as Util
-import Modulo_Util_Gtk as Util_Gtk
-import Modulo_FFmpeg as FFmpeg
 import os, pathlib, subprocess
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+
+from Interface import Modulo_Util_Gtk as Util_Gtk
+from Modulos import Modulo_FFmpeg as FFmpeg
+from Modulos import Modulo_Util as Util
+from Modulos.Modulo_Language import get_text as Lang
 
 
 sys = Util.System()

@@ -1,4 +1,6 @@
-import Modulo_Util as Util
+from . import Modulo_Util as Util
+from .Modulo_Language import get_text as Lang
+
 
 sys = Util.System()
 
@@ -11,7 +13,7 @@ def Resolution(rez_H=854, rez_V=480):
         rez_H = 854
         rez_V = 480
         print('\nDebido a los datos erroneos\n'
-              f'La resolución sera {rez_H}x{rez_V}\n')
+              f'{Lang("the_cfg_be")}: {rez_H}x{rez_V}\n')
               
     if rez_H <= 0 or rez_V <= 0:
         rez_H, rez_V = 1, 1
@@ -27,7 +29,10 @@ def FPS(fps=25):
         fps = int(fps)
     except:
         fps = 25
-        print(f'\nDebido a los datos erroneos, los fps seran {fps}\n')
+        print(
+            f'\nDebido a los datos erroneos\n'
+            f'{Lang("the_cfg_be")}: {fps}\n'
+        )
         
     if fps <= 0:
         fps = 1
@@ -43,7 +48,10 @@ def CRF(crf=30):
         crf = int(crf)
     except:
         crf = 30
-        print(f'\nDatos erroneos, por lo tanto el crf sera {crf}\n')
+        print(
+            f'\nDatos erroneos\n'
+            f'{Lang("the_cfg_be")}: {crf}\n'
+        )
 
     if crf >= 0 and crf <= 50: pass  
     else:
@@ -148,7 +156,10 @@ def Preset(preset='medium'):
 
     else:
         preset = '-preset medium'
-        print(f'Debido a los datos erroneos el presen sera "{preset}"')
+        print(
+            f'Debido a los datos erroneos\n'
+            '{Lang("the_cfg_be")}: "{preset}"'
+        )
         
     return preset
     
@@ -191,10 +202,11 @@ def Message(opc='crf'):
         opc == 'Audio'
     ):
         msg = (
-            'Estos son los dispositivos de audio, elige uno.'
+            f'{Lang("are_disp")}.\n'
+            f'{Lang("set_option")}:'
         )
         
     else:
-        msg = 'Mensaje FFmpeg para else.'
+        msg = 'ERROR - Message / FFmpeg'
         
     return msg

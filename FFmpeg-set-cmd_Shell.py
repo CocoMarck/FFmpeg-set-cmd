@@ -1,5 +1,5 @@
-import Modulo_Util as Util
-import Modulo_FFmpeg as FFmpeg
+from Modulos import Modulo_Util as Util
+from Modulos import Modulo_FFmpeg as FFmpeg
 import pathlib, os
 
 
