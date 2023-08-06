@@ -1,8 +1,8 @@
-from . import Modulo_Util as Util
+from .Modulo_System import get_system
 from .Modulo_Language import get_text as Lang
 
 
-sys = Util.System()
+sys = get_system()
 
 
 def Resolution(rez_H=854, rez_V=480):
@@ -158,7 +158,7 @@ def Preset(preset='medium'):
         preset = '-preset medium'
         print(
             f'Debido a los datos erroneos\n'
-            '{Lang("the_cfg_be")}: "{preset}"'
+            f'{Lang("the_cfg_be")}: "{preset}"'
         )
         
     return preset

@@ -1,30 +1,46 @@
-from Modulos import Modulo_Util as Util
 from Modulos import Modulo_FFmpeg as FFmpeg
+
+from Modulos.Modulo_System import(
+    get_system,
+    CleanScreen,
+    Command_Run
+)
+
+from Modulos.Modulo_Language import (
+    get_text as Lang
+)
+
+from Modulos.Modulo_ShowPrint import (
+    Title,
+    Continue,
+    Separator,
+    Archive_Path
+)
 import pathlib, os
 
 
-sys = Util.System()
+sys = get_system()
 
 def Menu_FFmpeg():
     cfg_file = 'FFmpeg_cfg.txt'
     
     loop = True
     while loop == True:
-        Util.CleanScreen()
+        CleanScreen()
         opc = input(
-            Util.Title(txt='Opciones', see=False) +
-            '1. Configurar video\n'
-            '2. Grabar\n'
-            '3. Reproducir\n'
-            '4. Ayuda\n'
-            '9. Ver comandos creados\n'
-            '0. Salir\n\n'
+            Title(text=Lang('option'), print_mode=False) +
+            f'1. {Lang("cfg")} - Video\n'
+            f'2. {Lang("record")}\n'
+            f'3. {Lang("reproduce")}\n'
+            f'4. {Lang("help")}\n'
+            f'9. {Lang("view_cfg")}\n'
+            f'0. {Lang("exit")}\n\n'
             
-            'Elige una opción: '
+            f'{Lang("set_option")}: '
         )
         cfg = '' # Sin Configurar
         cfg_save = False
-        Util.CleanScreen()
+        CleanScreen()
         if opc == '1':
             cfg = Config_Video()
             cfg_save = True
@@ -45,38 +61,48 @@ def Menu_FFmpeg():
             if pathlib.Path(cfg_file).exists():
                 with open(cfg_file, 'r') as file_cfg:
                     read_cfg = file_cfg.read()
-                    input(read_cfg + '\n\nPreciona enter para continuar...')
+                    input(
+                        read_cfg +
+                        '\n\n'
+                        f'{Lang("continue_enter")}...'
+                    )
                     
         elif opc == '0':
             loop = False
-            print('Hasta la proxima...')
+            print(f"{Lang('bye')}...")
         
         else:
             input(
                 f'No existe la opción "{opc}".\n'
-                'Preciona enter para continuar...'
+                f'{Lang("continue_enter")}...'
             )
             
         if cfg_save == True:
             if cfg == '': pass
             else:
-                Util.CleanScreen()
+                CleanScreen()
             
-                opc = Util.Continue(
-                    Util.Title('Esta es la configuración', see=False) +
-                    f'{cfg}\n\n¿Continuar?'
+                opc = Continue(
+                    Title(Lang('cfg'), print_mode=False) +
+                    f'{cfg}\n\n¿{Lang("continue")}?'
                 )
                 
                 if opc == 's':
-                    Util.Command_Run(str(cfg))
+                    Command_Run(
+                        str(cfg), 
+                        text_input=Lang('continue_enter'),
+                        open_new_terminal=False
+                    )
                     with open(cfg_file, 'a') as file_cfg:
-                        file_cfg.write(cfg + '\n' + Util.Separator() + '\n\n')
+                        file_cfg.write(
+                            cfg + '\n' + Separator(print_mode=False) + '\n\n'
+                        )
                 
                 elif opc == 'n':
                     pass
                     
                 else:
-                    Util.Continue(txt=opc, msg = True)
+                    Continue(text=opc, message_error = True)
             
         else:
             pass
@@ -85,14 +111,14 @@ def Menu_FFmpeg():
 def Config_Video():
     # ffmpeg -i '/Ruta/VideoEntrada.mkv' -cfg 0/50 -r 0 '/Ruta/VideoSalida.mkv'
     
-    path = Util.Archive_Path()
+    path = Archive_Path()
     
-    opc = Util.Continue(
-        Util.Title('CRF Calidad', see=False) +
-        '¿Cambiar calidad de Video (crf)?'
+    opc = Continue(
+        Title(f'CRF {Lang("quality")}', print_mode=False) +
+        f'¿{Lang("continue")} (crf)?'
     )
     if opc == 's':
-        Util.Title('CRF Calidad')
+        Title(f'CRF {Lang("quality")}')
         print(FFmpeg.Message('crf') + '\n')
         
         crf = FFmpeg.CRF(input('CRF: '))
@@ -101,36 +127,36 @@ def Config_Video():
         crf = ''
         
     print()
-    opc = Util.Continue(
-        Util.Title('Resolución de Video', see=False) +
-        '¿Rescalar resolución de video?'
+    opc = Continue(
+        Title(f'{Lang("resolution")} - Video', print_mode=False) +
+        f'¿{Lang("continue")}?'
     )
     if opc == 's':
-        Util.Title('Resolución de Video')
+        Title(f'{Lang("resolution")} - Video')
         print(FFmpeg.Message('resolution') + '\n')
     
         rez = FFmpeg.Resolution(
-            rez_H = input('Resolución Horizontal: '),
-            rez_V = input('Resolución Vertical: ')
+            rez_H = input(f'{Lang("resolution")} - Horizontal: '),
+            rez_V = input(f'{Lang("resolution")} - Vertical: ')
         )
         
     else:
         rez = ''
     
     print()
-    opc = Util.Continue(
-        Util.Title('Fotogramas por segundo', see=False) +
-        '¿Cambiar FPS?'
+    opc = Continue(
+        Title(Lang('fps'), print_mode=False) +
+        f'¿{Lang("continue")}?'
     )
     if opc == 's':
-        Util.Title('Fotogramas por segundo')
+        Title(Lang('fps'))
         print(FFmpeg.Message('fps') + '\n')
         fps = FFmpeg.FPS(input('FPS: '))
         
     else:
         fps = ''
         
-    opc = Util.Continue('¿Configurar video?')
+    opc = Continue(f'¿{Lang("cfg")} - video?')
     if opc == 's':    
         cfg = (
             f'ffmpeg -i "{path}" {crf} {rez} {fps} "{path}_Config.mkv"'
@@ -145,11 +171,11 @@ def Config_Video():
 def Record(opc=''):
     if opc == '':
         opc = input(
-            Util.Title('Opciones para grabar', see=False) +
-            '1. Grabar Audio\n'
-            '2. Grabar Pantalla\n'
+            Title(Lang('record'), print_mode=False) +
+            f'1. {Lang("rec_audio")}\n'
+            f'2. {Lang("rec_video")}\n'
             '\n'
-            'Opción: '
+            f'{Lang("set_option")}: '
         )
         if opc == '1': opc = 'Audio'
         elif opc == '2': opc = 'Desktop'
@@ -163,24 +189,24 @@ def Record(opc=''):
     elif sys == 'win':
         Desktop = '-f gdigrab -i desktop'
         
-    Util.CleanScreen()
+    CleanScreen()
     
     if (
         opc == 'Audio' or
         opc == 'Desktop'
     ):
-        path = Util.Archive_Path('Video/Audio')
+        path = Archive_Path('Video/Audio')
     else:
         pass
     
     if opc == 'Audio':
         try:
-            adi = int(input('¿Cuantos Audios quieres grabar?: '))
+            adi = int(input('¿Cuantos audios quieres grabar?: '))
         
         except:
             adi = 0
             
-        Util.CleanScreen()
+        CleanScreen()
         if adi >= 2:
             print(FFmpeg.Message('Audio') + '\n')
             os.system(FFmpeg.Command('Audio'))
@@ -202,7 +228,7 @@ def Record(opc=''):
             cfg = ''
     
     elif opc == 'Desktop':
-        opc = Util.Continue('¿Configuración Avanzada?')
+        opc = Continue('¿Configuración Avanzada?')
         
         if opc == 's':
             opc = 'Modo Avanzado'
@@ -211,12 +237,12 @@ def Record(opc=''):
             opc = 'Modo Basico'
             
         if opc == 'Modo Avanzado':
-            Util.Title('Calidad - CRF')
+            Title('Calidad - CRF')
             print(FFmpeg.Message('crf') + '\n')
             CRF = FFmpeg.CRF(input('CRF: '))
             
             print()
-            Util.Title(f'{opc} / Uso de CPU - Preset')
+            Title(f'{opc} / {Lang("cpu_use")} - Preset')
             print(FFmpeg.Message('preset') + '\n')
             Preset = input(
                 "Rango del 1 al 9. Donde 1 es la opcion que usa "
@@ -249,7 +275,7 @@ def Record(opc=''):
             Preset = FFmpeg.Preset(Preset)
             
             print()
-            Util.Title(f'{opc} / Resolución')
+            Title(f'{opc} / Resolución')
             print(FFmpeg.Message('resolution') + '\n')
             Resolution = FFmpeg.Resolution(
                 rez_H = input('Resolución Horizontal: '),
@@ -257,14 +283,14 @@ def Record(opc=''):
             )
             
             print()
-            Util.Title(f'{opc} / Fotogramas - FPS')
+            Title(f'{opc} / {Lang("fps")} - FPS')
             print(FFmpeg.Message('fps') + '\n')
             FPS = FFmpeg.FPS(input('FPS: '))
             
             print()
-            opc = Util.Continue(
-                Util.Title(opc, see=False) +
-                '¿Grabar Audio?'
+            opc = Continue(
+                Title(opc, print_mode=False) +
+                f'¿{Lang("rec_audio")}?'
             )
             if opc == 's':
                 try:
@@ -308,8 +334,8 @@ def Record(opc=''):
                 )
         
         elif opc == 'Modo Basico':
-            opc = Util.Continue(
-                Util.Title(txt=opc, see=False) +
+            opc = Continue(
+                Title(text=opc, print_mode=False) +
                 '¿Grabar con audio?'
             )
             if opc == 's':
@@ -363,11 +389,11 @@ def Record(opc=''):
 def Reproduce(opc = ''):
     if opc == '':
         nmr = input(
-            Util.Title('Reproducir', see=False) +
-            '1. Archivo Video/Audio\n'
-            '2. Dispositivo de Audio\n'
+            Title(Lang('reproduce'), print_mode=False) +
+            f'1. {Lang("arch")} Video/Audio\n'
+            f'2. {Lang("disp_audio")}\n'
             '\n'
-            'Opción: '
+            f'{Lang("set_option")}: '
         )
         
     else:
@@ -378,13 +404,13 @@ def Reproduce(opc = ''):
     else:
         pass
         
-    Util.CleanScreen()
+    CleanScreen()
     if opc == 'Archive':
-        Util.Title('Ruta de archivo de Video o Audio')
+        Title(f'{Lang("dir")} - Video/Audio')
         cfg = (
             'ffplay -i ' + 
             '"' +
-            Util.Archive_Path('Video/Audio') + 
+            Archive_Path('Video/Audio') + 
             '"'
         )
               

@@ -1,9 +1,14 @@
-from . import Modulo_Util as Util
-from . import Modulo_Language as Lang
+from .Modulo_Language import (
+    Language,
+    YesNo,
+    get_text
+)
+from .Modulo_System import (
+    CleanScreen,
+)
 
 
-sys = Util.System()
-lang = Lang.Language()
+lang = Language()
 
 
 def Title(
@@ -43,6 +48,7 @@ def Title(
 
     elif print_mode == False:
         # Devolver texto
+        text += '\n'
         return text
 
     else:
@@ -78,7 +84,7 @@ def Continue(
         loop = False
 
         # Se mostrara un input, que se quitara, precionando enter.
-        #Util.CleanScreen()
+        #CleanScreen()
         if text == '':
             input(lang['continue_enter'] + '...')
         else:
@@ -98,17 +104,17 @@ def Continue(
         # lower() modo minusculas, upper() Modo Mayusculas
         option = input(
             f'{text} '
-            f'{ Lang.YesNo("yes") }'
+            f'{ YesNo("yes") }'
             '/'
-            f'{ Lang.YesNo("no") }: '
+            f'{ YesNo("no") }: '
         )
         
         # Eleccion de opcion
         # lower() modo minusculas, upper() Modo Mayusculas
-        Util.CleanScreen()
+        CleanScreen()
         if (
-            option == Lang.YesNo('yes') or
-            option == Lang.YesNo('no')
+            option == YesNo('yes') or
+            option == YesNo('no')
         ):
             # Si la opcion es si o no, el loop para
             loop = False
@@ -147,3 +153,16 @@ def Separator(
         print(separator)
     else:
         return separator
+
+
+def Archive_Path(text='Archivo'):
+    from .Modulo_Files import Path, Name
+    CleanScreen()
+    
+    Title(f'{get_text("dir")} - {text}')
+    cfg = Path(input(f'{get_text("set_dir")}: '))
+    
+    Title(f'{get_text("name")} - {text}')
+    cfg = cfg + Name(input(f'{get_text("name")}: '))
+    
+    return cfg

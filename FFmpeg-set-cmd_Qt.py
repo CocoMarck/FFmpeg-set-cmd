@@ -1,3 +1,21 @@
+from Modulos import Modulo_FFmpeg as FFmpeg
+
+from Modulos.Modulo_Files import(
+    Path as Path_Util
+)
+
+from Modulos.Modulo_System import(
+    get_system,
+)
+
+from Modulos.Modulo_Text import(
+    Text_Read
+)
+
+from Modulos.Modulo_Language import get_text as Lang
+
+from Interface import Modulo_Util_Qt as Util_Qt
+
 import sys
 from PyQt6.QtWidgets import(
     QApplication,
@@ -19,13 +37,8 @@ from PyQt6.QtCore import Qt
 from pathlib import Path
 import subprocess
 
-from Interface import Modulo_Util_Qt as Util_Qt
-from Modulos import Modulo_FFmpeg as FFmpeg
-from Modulos import Modulo_Util as Util
-from Modulos.Modulo_Language import get_text as Lang
 
-
-system = Util.System()
+system = get_system()
 cfg_file = 'FFmpeg_cfg.txt'
 arch_typeVideoAudio = (
     'Videos o Audios'
@@ -46,7 +59,7 @@ def Open_Archive():
     arch_name, ok = QFileDialog.getOpenFileName(
         None,
         f'{Lang("select")} - Video / Audio',
-        Util.Path(),
+        Path_Util(),
         arch_typeVideoAudio
     )
     if arch_name:
@@ -141,7 +154,7 @@ class Window_Menu(QWidget):
     
     def evt_view_cfg(self):
         if Path(cfg_file).exists():
-            text = Util.Text_Read(cfg_file, 'ModeText')
+            text = Text_Read(cfg_file, 'ModeText')
         else:
             text = f'No existe el archivo de texto "{cfg_file}"'
         dialog = Util_Qt.Dialog_TextEdit(parent=self, text=text)
@@ -351,7 +364,7 @@ class Dialog_VideoAudio(QDialog):
         video_name, _ = QFileDialog.getSaveFileName(
             self,
             Lang('save_arch'), 
-            Util.Path(), # Ruta
+            Path_Util(), # Ruta
             arch_typeVideoAudio
         )
         if video_name:

@@ -1,3 +1,18 @@
+from Modulos import Modulo_FFmpeg as FFmpeg
+
+from Modulos.Modulo_System import(
+    get_system,
+    CleanScreen
+)
+
+from Modulos.Modulo_Text import(
+    Text_Read
+)
+
+from Modulos.Modulo_Language import get_text as Lang
+
+from Interface import Modulo_Util_Gtk as Util_Gtk
+
 import os, pathlib, subprocess
 
 import gi
@@ -5,13 +20,8 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
-from Interface import Modulo_Util_Gtk as Util_Gtk
-from Modulos import Modulo_FFmpeg as FFmpeg
-from Modulos import Modulo_Util as Util
-from Modulos.Modulo_Language import get_text as Lang
 
-
-sys = Util.System()
+sys = get_system()
 cfg_file = 'FFmpeg_cfg.txt'
 
 
@@ -158,7 +168,7 @@ class Window_Menu(Gtk.Window):
         
     def evt_text_view(self, widget):
         if pathlib.Path(cfg_file).exists():
-            text = Util.Text_Read(cfg_file, 'ModeText')
+            text = Text_Read(cfg_file, 'ModeText')
         else: 
             text = f'No existe el archivo de texto "{cfg_file}"'
         dialog = Util_Gtk.Dialog_TextView(self, text=text)
@@ -376,7 +386,7 @@ class Dialog_VideoAudio(Gtk.Dialog):
                 dialog.destroy()
         
     def evt_add_cfg(self, widget):
-        Util.CleanScreen()
+        CleanScreen()
         
         crf, fps, rez_HxV = '', '', ''
         if (
