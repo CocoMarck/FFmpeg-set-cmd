@@ -149,19 +149,25 @@ class Window_Menu(Gtk.Window):
         self.add(box_v)
         
     def evt_ffmpeg_config(self, widget):
+        self.hide()
         dialog = Dialog_VideoAudio(self, opc='VideoConfig')
         response = dialog.run()
         dialog.destroy()
+        self.show_all()
         
     def evt_ffmpeg_record(self, widget):
+        self.hide()
         dialog = Dialog_VideoAudio(self, opc='VideoRecord')
         response = dialog.run()
         dialog.destroy()
+        self.show_all()
         
     def evt_ffmpeg_reproduce(self, widget):
+        self.hide()
         dialog = Dialog_Reproduce(self)
         dialog.run()
         dialog.destroy()
+        self.show_all()
         
     def evt_ffmpeg_help(self, widget):
         Command_Run(self, cfg=FFmpeg.Command('Help'))
@@ -171,9 +177,11 @@ class Window_Menu(Gtk.Window):
             text = Text_Read(cfg_file, 'ModeText')
         else: 
             text = f'No existe el archivo de texto "{cfg_file}"'
+        self.hide()
         dialog = Util_Gtk.Dialog_TextView(self, text=text)
         response = dialog.run()
         dialog.destroy()
+        self.show_all()
         
     def evt_exit(self, widget):
         self.destroy() # o tambien 'exit()'
