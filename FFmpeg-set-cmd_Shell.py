@@ -1,16 +1,17 @@
-from Modulos import Modulo_FFmpeg as FFmpeg
+from logic import Modulo_FFmpeg as FFmpeg
 
-from Modulos.Modulo_System import(
+from logic.Modulo_System import(
     get_system,
     CleanScreen,
     Command_Run
 )
 
-from Modulos.Modulo_Language import (
+from data.Modulo_Language import (
     get_text as Lang
 )
+from data.FFmpeg_data import *
 
-from Modulos.Modulo_ShowPrint import (
+from interface.Modulo_ShowPrint import (
     Title,
     Continue,
     Separator,
@@ -22,7 +23,7 @@ import pathlib, os
 sys = get_system()
 
 def Menu_FFmpeg():
-    cfg_file = 'FFmpeg_cfg.txt'
+    #cfg_file = 'FFmpeg_cfg.txt'
     
     loop = True
     while loop == True:

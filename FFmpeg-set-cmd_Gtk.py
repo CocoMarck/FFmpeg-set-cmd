@@ -1,17 +1,18 @@
-from Modulos import Modulo_FFmpeg as FFmpeg
+from logic import Modulo_FFmpeg as FFmpeg
 
-from Modulos.Modulo_System import(
+from logic.Modulo_System import(
     get_system,
     CleanScreen
 )
 
-from Modulos.Modulo_Text import(
+from logic.Modulo_Text import(
     Text_Read
 )
 
-from Modulos.Modulo_Language import get_text as Lang
+from data.Modulo_Language import get_text as Lang
+from data.FFmpeg_data import *
 
-from Interface import Modulo_Util_Gtk as Util_Gtk
+from interface import Modulo_Util_Gtk as Util_Gtk
 
 import os, pathlib, subprocess
 
@@ -22,7 +23,7 @@ from gi.repository import Gtk
 
 
 sys = get_system()
-cfg_file = 'FFmpeg_cfg.txt'
+#cfg_file = 'FFmpeg_cfg.txt'
 
 
 def Command_Run(self, cfg = ''):

@@ -1,20 +1,21 @@
-from Modulos import Modulo_FFmpeg as FFmpeg
+from logic import Modulo_FFmpeg as FFmpeg
 
-from Modulos.Modulo_Files import(
+from logic.Modulo_Files import(
     Path as Path_Util
 )
 
-from Modulos.Modulo_System import(
+from logic.Modulo_System import(
     get_system,
 )
 
-from Modulos.Modulo_Text import(
+from logic.Modulo_Text import(
     Text_Read
 )
 
-from Modulos.Modulo_Language import get_text as Lang
+from data.Modulo_Language import get_text as Lang
+from data.FFmpeg_data import *
 
-from Interface import Modulo_Util_Qt as Util_Qt
+from interface import Modulo_Util_Qt as Util_Qt
 
 import sys
 from PyQt6.QtWidgets import(
