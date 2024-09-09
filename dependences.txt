@@ -1,0 +1,6 @@
+- python >= 3
+- PyQt6
+- PyGtk3
+- python3-screeninfo
+- ffmpeg
+- xterm
