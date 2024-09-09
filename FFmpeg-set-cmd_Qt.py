@@ -40,7 +40,6 @@ import subprocess
 
 
 system = get_system()
-cfg_file = 'FFmpeg_cfg.txt'
 arch_typeVideoAudio = (
     'Videos o Audios'
     '(*.mkv *.mp4 *.webm *.avi *mov *vob *wmv ' # Video
