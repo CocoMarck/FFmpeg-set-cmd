@@ -18,7 +18,7 @@ locale.setlocale(locale.LC_ALL, '')
 current_dir = os.path.dirname( os.path.abspath(sys.argv[0]) )
 
 # Construye la ruta a Languages desde el directorio que contiene el módulo
-lang_dir = os.path.join(current_dir, 'Languages')
+lang_dir = os.path.join(current_dir, 'resources', 'languages')
 
 
 def Default_Language():
